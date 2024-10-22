@@ -13,11 +13,18 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ProductForm({ route, navigation }) {
-  const [description, setDescription] = useState("");
-  const [brandId, setBrandId] = useState("");
-  const [brand, setBrand] = useState("");
-  const [price, setPrice] = useState("");
-  const [brandSelected, setBrandSelected] = useState(null);
+  const { product } = route.params;
+  const [description, setDescription] = useState(
+    product ? product?.description : ""
+  );
+  const [brandId, setBrandId] = useState(product ? product?.brand?.id : "");
+  const [brand, setBrand] = useState(
+    product ? product?.brand?.description : ""
+  );
+  const [price, setPrice] = useState(product ? product?.price.toString() : "");
+  const [brandSelected, setBrandSelected] = useState(
+    product ? product?.brand : ""
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,27 +34,11 @@ export default function ProductForm({ route, navigation }) {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    if (route.params?.product) {
-      const { product } = route.params;
-      setDescription(product.description);
-      setBrand(product.brand.description);
-      setPrice(product.price);
-    }
-  }, [route.params]);
-
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!description || !brand || !price) {
       Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
-
-    console.log("Produto salvo:", {
-      description,
-      brand,
-      price,
-    });
-    navigation.goBack();
   };
 
   return (
@@ -69,6 +60,7 @@ export default function ProductForm({ route, navigation }) {
             placeholder="Marca"
             value={brand}
             onChangeText={setBrand}
+            editable={false}
           />
           <View style={{ width: "2%" }} />
           <TouchableOpacity
@@ -145,6 +137,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     backgroundColor: "#fff",
+    color: "#000",
   },
   brandButton: {
     justifyContent: "center",

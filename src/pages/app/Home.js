@@ -13,9 +13,7 @@ export default function Home({ navigation }) {
     });
   }, [navigation]);
 
-  const handleLogout = () => {
-    console.log("Logout executado");
-  };
+  const handleLogout = async () => {};
 
   const navigateToProducts = () => {
     navigation.navigate("ProductList");

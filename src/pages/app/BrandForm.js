@@ -12,7 +12,10 @@ import {
 } from "react-native";
 
 export default function BrandForm({ route, navigation }) {
-  const [description, setDescription] = useState("");
+  const { brand } = route.params;
+  const [description, setDescription] = useState(
+    brand ? brand?.description : ""
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -20,23 +23,11 @@ export default function BrandForm({ route, navigation }) {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    if (route.params?.brand) {
-      const { brand } = route.params;
-      setDescription(brand.description);
-    }
-  }, [route.params]);
-
   const handleSave = () => {
     if (!description) {
       Alert.alert("Erro", "Por favor, preencha o campo de descrição.");
       return;
     }
-
-    console.log("Marca salva:", {
-      description,
-    });
-    navigation.goBack();
   };
 
   return (

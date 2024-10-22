@@ -28,6 +28,8 @@ export default function SignUp({ navigation }) {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  const handleRegister = async () => {};
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -83,7 +85,7 @@ export default function SignUp({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
             <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
 

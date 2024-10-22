@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
@@ -70,7 +71,25 @@ const AuthNavigator = () => {
 };
 
 export default function AppRoutes() {
-  const { user } = useAuth();
+  const { setUser, setToken, user } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  const handleLogin = async () => {
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    handleLogin();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       {user ? <AppNavigator /> : <AuthNavigator />}

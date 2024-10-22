@@ -4,29 +4,16 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
-import React, { useLayoutEffect } from "react";
-
-const brandsData = [
-  { id: "1", description: "Marca A" },
-  { id: "2", description: "Marca B" },
-  { id: "3", description: "Marca C" },
-  { id: "4", description: "Marca D" },
-  { id: "5", description: "Marca E" },
-  { id: "6", description: "Marca F" },
-  { id: "7", description: "Marca G" },
-  { id: "8", description: "Marca H" },
-  { id: "9", description: "Marca I" },
-  { id: "10", description: "Marca J" },
-  { id: "11", description: "Marca K" },
-  { id: "12", description: "Marca L" },
-  { id: "13", description: "Marca M" },
-  { id: "14", description: "Marca N" },
-  { id: "15", description: "Marca O" },
-];
+import React, { useLayoutEffect, useState, useEffect } from "react";
 
 export default function ProductBrandList({ navigation, route }) {
   const { selectBrand } = route.params;
+  const [brandsData, setBrandsData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -50,12 +37,18 @@ export default function ProductBrandList({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={brandsData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-      />
+      {brandsData ? (
+        <FlatList
+          data={brandsData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size={"large"} color={"blue"} />
+        </View>
+      )}
     </View>
   );
 }
