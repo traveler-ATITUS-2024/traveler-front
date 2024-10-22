@@ -12,6 +12,8 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
+import { register } from "../../services/authService";
 
 export default function SignUp({ navigation }) {
   const [email, setEmail] = useState("");
@@ -19,6 +21,7 @@ export default function SignUp({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { setUser, setToken } = useAuth();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -28,7 +31,19 @@ export default function SignUp({ navigation }) {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleRegister = async () => {};
+  const handleRegister = async () => {
+    const { erro, data, mensagem } = await register(email, password);
+
+    if (erro) {
+      Alert.alert(mensagem);
+      return;
+    }
+
+    const { name, token } = data;
+
+    setUser({ name });
+    setToken(token);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

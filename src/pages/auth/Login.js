@@ -10,19 +10,35 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { login } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { setUser, setToken } = useAuth();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    const { erro, data, mensagem } = await login(email, password);
+
+    if (erro) {
+      Alert.alert(mensagem);
+      return;
+    }
+
+    const { name, token } = data;
+
+    setUser({ name });
+    setToken(token);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

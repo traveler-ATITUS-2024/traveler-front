@@ -3,6 +3,8 @@ import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { login } from "../services/authService";
 
 import Login from "../pages/auth/Login";
 import SignUp from "../pages/auth/SignUp";
@@ -75,7 +77,23 @@ export default function AppRoutes() {
   const [loading, setLoading] = useState(true);
 
   const handleLogin = async () => {
-    setLoading(false);
+    try {
+      const credentials = await AsyncStorage.getItem("@userCredentials");
+      if (credentials) {
+        const { email, password } = JSON.parse(credentials);
+        const userResponse = await login(email, password);
+
+        if (!userResponse.erro) {
+          const { name, token } = userResponse.data;
+          setUser({ name });
+          setToken(token);
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao tentar autenticar automaticamente:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

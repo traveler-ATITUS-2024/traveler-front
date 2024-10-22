@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
+import { logout } from "../../services/authService";
 
 export default function Home({ navigation }) {
   useLayoutEffect(() => {
@@ -13,7 +15,13 @@ export default function Home({ navigation }) {
     });
   }, [navigation]);
 
-  const handleLogout = async () => {};
+  const { setUser, setToken } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    setUser(null);
+    setToken(null);
+  };
 
   const navigateToProducts = () => {
     navigation.navigate("ProductList");
