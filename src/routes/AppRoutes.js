@@ -15,6 +15,7 @@ import ProductForm from "../pages/app/ProductForm";
 import ProductBrandList from "../pages/app/ProductBrandList";
 import BrandList from "../pages/app/BrandList";
 import BrandForm from "../pages/app/BrandForm";
+import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
 
 const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -25,7 +26,12 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="Home"
         component={Home}
-        options={{ headerTitle: "CRUD", headerTitleAlign: "center" }}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="PlacesAutocomplete"
+        component={PlacesAutocomplete}
+        options={{ headerShown: false }}
       />
       <AppStack.Screen
         name="ProductList"

@@ -12,6 +12,7 @@ import {
   Platform,
   Alert,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { forgotPassword, login } from "../../services/authService";
@@ -22,6 +23,8 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { setUser, setToken } = useAuth();
 
   const togglePasswordVisibility = () => {
@@ -29,25 +32,24 @@ export default function Login({ navigation }) {
   };
 
   const handleLogin = async () => {
-    const { erro, data, mensagem } = await login(email, password);
+    try {
+      setIsLoading(true);
 
-    if (erro) {
-      Alert.alert(mensagem);
-      return;
-    }
+      const { erro, data, mensagem } = await login(email, password);
 
-    const { name, token } = data;
+      if (erro) {
+        Alert.alert(mensagem);
+        return;
+      }
 
-    setUser({ name });
-    setToken(token);
-  };
+      const { name, token } = data;
 
-  const forgotMyPassword = async () => {
-    const { erro, response } = await forgotPassword(email);
-
-    if (erro) {
-      Alert.alert(mensagem);
-      return;
+      setUser({ name });
+      setToken(token);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,7 +83,7 @@ export default function Login({ navigation }) {
                 onChangeText={setPassword}
                 value={password}
                 autoCapitalize="none"
-                secureTextEntry={showPassword}
+                secureTextEntry={!showPassword}
               />
               <TouchableOpacity
                 style={styles.icone}
@@ -115,9 +117,13 @@ export default function Login({ navigation }) {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.botaoEntrar} onPress={handleLogin}>
-            <Text style={styles.textobotao}>Entrar</Text>
-          </TouchableOpacity>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#FFF" />
+          ) : (
+            <TouchableOpacity style={styles.botaoEntrar} onPress={handleLogin}>
+              <Text style={styles.textobotao}>Entrar</Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             style={styles.acessoLogin}

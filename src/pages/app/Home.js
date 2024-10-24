@@ -1,45 +1,47 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import React, { useLayoutEffect } from "react";
-import { Ionicons } from "@expo/vector-icons";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
+import { useState } from "react";
+import logo from "../../../assets/logo.png";
+import fundomenu from "../../../assets/fundomenu.png";
+import PlacesAutocomplete from "../../routes/AppRoutes";
 import { useAuth } from "../../context/AuthContext";
-import { logout } from "../../services/authService";
 
-export default function Home({ navigation }) {
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={30} color="black" />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
-  const { setUser, setToken } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-    setUser(null);
-    setToken(null);
-  };
-
-  const navigateToProducts = () => {
-    navigation.navigate("ProductList");
-  };
-
-  const navigateToBrands = () => {
-    navigation.navigate("BrandList");
-  };
+export default function Viagem({ navigation }) {
+  const [mostraModal, setMostraModal] = useState(false);
+  const { token } = useAuth();
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={navigateToProducts}>
-        <Text style={styles.buttonText}>Produtos</Text>
+      <View style={styles.header}>
+        <Image source={logo} style={styles.logo} />
+      </View>
+
+      <Text style={styles.titulo}>traveler</Text>
+
+      <View>
+        <Image source={fundomenu} style={styles.imagemfundomenu} />
+      </View>
+
+      <Text style={styles.texto}>Qual seu próximo destino?</Text>
+
+      <TouchableOpacity
+        style={styles.botao}
+        onPress={() => setMostraModal(true)}
+      >
+        <Text style={styles.textobotao}>+ Adicionar nova viagem</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={navigateToBrands}>
-        <Text style={styles.buttonText}>Marcas</Text>
-      </TouchableOpacity>
+      <View style={styles.linha}></View>
+
+      <Modal visible={mostraModal} animationType="fade" transparent={true}>
+        <PlacesAutocomplete fechar={() => setMostraModal(false)} />
+      </Modal>
     </View>
   );
 }
@@ -47,28 +49,57 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#00050D",
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
-    padding: 20,
+    justifyContent: "space-between",
+    paddingVertical: 20,
   },
-  title: {
+  header: {
+    alignItems: "center",
+    marginTop: 50,
+  },
+  logo: {
+    width: 98,
+    height: 83,
+    marginBottom: 24,
+  },
+  titulo: {
     fontSize: 24,
-    fontWeight: "bold",
+    letterSpacing: 6.2,
+    fontFamily: "Inter",
+    color: "#FFF",
+  },
+  imagemfundomenu: {
+    width: 300,
+    height: 300,
+  },
+  texto: {
+    color: "rgba(255,255,255,0.50)",
+    fontSize: 22,
     marginBottom: 20,
-    color: "#333",
   },
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#007bff",
-    justifyContent: "center",
+  botao: {
+    backgroundColor: "#0E6EFF",
+    width: 315,
+    height: 51,
+    borderRadius: 40,
     alignItems: "center",
-    borderRadius: 8,
-    marginTop: 15,
+    justifyContent: "center",
+    marginBottom: 140,
   },
-  buttonText: {
-    color: "#fff",
+  textobotao: {
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: "bold",
+  },
+  icon: {
+    width: 30,
+    height: 30,
+  },
+  linha: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#FFF",
+    width: 150,
+    marginTop: 5,
+    width: "90%",
   },
 });
