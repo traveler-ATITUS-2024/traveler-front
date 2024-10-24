@@ -1,14 +1,13 @@
 import api from "./api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const login = async (email, password) => {
+export const login = async (email, senha) => {
   try {
-    console.log(email, password);
-    const response = await api.post("/auth/login", { email, password });
+    const response = await api.post("/auth/login", { email, senha });
 
     await AsyncStorage.setItem(
       "@userCredentials",
-      JSON.stringify({ email, password })
+      JSON.stringify({ email, senha })
     );
 
     return { erro: false, data: response.data };
@@ -23,13 +22,17 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (email, password) => {
+export const register = async (nome, email, senha) => {
   try {
-    const response = await api.post("/auth/register", { email, password });
+    const response = await api.post("/auth/registrar", {
+      nome,
+      email,
+      senha,
+    });
 
     await AsyncStorage.setItem(
       "@userCredentials",
-      JSON.stringify({ email, password })
+      JSON.stringify({ nome, email, senha })
     );
 
     return { erro: false, data: response.data };

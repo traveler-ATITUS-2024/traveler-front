@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.1.189.162:8080",
+  baseURL: "https://traveler-api-n420.onrender.com",
 });
 
 export default api;
