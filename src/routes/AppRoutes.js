@@ -8,6 +8,7 @@ import { login } from "../services/authService";
 
 import Login from "../pages/auth/Login";
 import SignUp from "../pages/auth/SignUp";
+import ForgotPassword from "../pages/app/ForgotPassword";
 import Home from "../pages/app/Home";
 import ProductList from "../pages/app/ProductList";
 import ProductForm from "../pages/app/ProductForm";
@@ -66,6 +67,11 @@ const AuthNavigator = () => {
       <AuthStack.Screen
         name="SignUp"
         component={SignUp}
+        options={{ headerShown: false }}
+      />
+      <AuthStack.Screen
+        name="ForgotPassword"
+        component={ForgotPassword}
         options={{ headerShown: false }}
       />
     </AuthStack.Navigator>

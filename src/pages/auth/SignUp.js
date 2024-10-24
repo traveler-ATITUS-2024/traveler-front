@@ -9,6 +9,8 @@ import {
   Keyboard,
   Image,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
@@ -45,109 +47,130 @@ export default function SignUp({ navigation }) {
   };
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Erro", "As senhas são diferentes.");
-      return;
+    try {
+      if (!username || !email || !password || !confirmPassword) {
+        Alert.alert("Erro", "Por favor, preencha todos os campos");
+        return;
+      }
+      if (password !== confirmPassword) {
+        Alert.alert("Erro", "As senhas são diferentes.");
+        return;
+      }
+
+      const { erro, data, mensagem } = await register(
+        username,
+        email,
+        password
+      );
+
+      if (erro) {
+        Alert.alert(mensagem);
+        return;
+      }
+
+      const { name, token } = data;
+
+      setUser({ name });
+      setToken(token);
+
+      Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+      navigation.navigate("Login");
+    } catch (error) {
+      Alert.alert("Erro", "Ocorreu um erro ao tentar cadastrar.");
     }
-
-    const { erro, data, mensagem } = await register(username, email, password);
-
-    if (erro) {
-      Alert.alert(mensagem);
-      return;
-    }
-
-    const { name, token } = data;
-
-    setUser({ name });
-    setToken(token);
-
-    navigation.navigate("Login");
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image source={logo} style={styles.logo} />
-          <Text style={styles.titulo}>traveler</Text>
-        </View>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome de Usuário"
-            placeholderTextColor="white"
-            value={username}
-            onChangeText={setUsername}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="white"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <View style={styles.inputArea}>
-            <TextInput
-              style={styles.input}
-              placeholder="Insira sua senha"
-              placeholderTextColor="#FFF"
-              onChangeText={setPassword}
-              value={password}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity
-              style={styles.icon}
-              onPress={togglePasswordVisibility}
-            >
-              {showPassword ? (
-                <Ionicons name="eye-off" color="#FFF" size={25} />
-              ) : (
-                <Ionicons name="eye" color="#FFF" size={25} />
-              )}
-            </TouchableOpacity>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Image source={logo} style={styles.logo} />
+            <Text style={styles.titulo}>traveler</Text>
           </View>
 
-          <View style={styles.inputArea}>
+          <View style={styles.form}>
             <TextInput
               style={styles.input}
-              placeholder="Confirme sua senha"
-              placeholderTextColor="#FFF"
-              onChangeText={setConfirmPassword}
-              value={confirmPassword}
-              secureTextEntry={!showConfirmPassword}
+              placeholder="Nome de Usuário"
+              placeholderTextColor="white"
+              value={username}
+              onChangeText={setUsername}
             />
-            <TouchableOpacity
-              style={styles.icon}
-              onPress={toggleConfirmPasswordVisibility}
-            >
-              {showConfirmPassword ? (
-                <Ionicons name="eye-off" color="#FFF" size={25} />
-              ) : (
-                <Ionicons name="eye" color="#FFF" size={25} />
-              )}
-            </TouchableOpacity>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="white"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
+            />
+
+            <View style={styles.inputArea}>
+              <TextInput
+                style={styles.input}
+                placeholder="Insira sua senha"
+                placeholderTextColor="#FFF"
+                onChangeText={setPassword}
+                autoCapitalize="none"
+                value={password}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={togglePasswordVisibility}
+              >
+                {showPassword ? (
+                  <Ionicons name="eye" color="#FFF" size={25} />
+                ) : (
+                  <Ionicons name="eye-off" color="#FFF" size={25} />
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputArea}>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirme sua senha"
+                placeholderTextColor="#FFF"
+                onChangeText={setConfirmPassword}
+                autoCapitalize="none"
+                value={confirmPassword}
+                secureTextEntry={!showConfirmPassword}
+              />
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={toggleConfirmPasswordVisibility}
+              >
+                {showConfirmPassword ? (
+                  <Ionicons name="eye" color="#FFF" size={25} />
+                ) : (
+                  <Ionicons name="eye-off" color="#FFF" size={25} />
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
+
+          <TouchableOpacity
+            style={styles.botaoCadastrar}
+            onPress={handleRegister}
+          >
+            <Text style={styles.textobotao}>Cadastrar-se</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.acessoLogin}
+            onPress={() => navigation.navigate("Login")}
+          >
+            <Text style={styles.login}>Já possuo uma conta</Text>
+            <View style={styles.linha}></View>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={styles.botaoCadastrar}
-          onPress={handleRegister}
-        >
-          <Text style={styles.textobotao}>Cadastrar-se</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.acessoLogin}
-          onPress={() => navigation.navigate("Login")}
-        >
-          <Text style={styles.login}>Já possuo uma conta</Text>
-          <View style={styles.linha}></View>
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

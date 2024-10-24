@@ -47,6 +47,24 @@ export const register = async (nome, email, senha) => {
   }
 };
 
+export const forgotPassword = async (email) => {
+  try {
+    const response = await api.post("/auth/esqueci-minha-senha", {
+      email,
+    });
+
+    return { erro: false, data: response.data };
+  } catch (error) {
+    console.error("Erro ao enviar e-mail:", error);
+    return {
+      erro: true,
+      mensagem:
+        error.response?.data?.message ||
+        "Erro ao enviar o e-mail. Tente novamente.",
+    };
+  }
+};
+
 export const logout = async () => {
   try {
     await AsyncStorage.removeItem("@userCredentials");

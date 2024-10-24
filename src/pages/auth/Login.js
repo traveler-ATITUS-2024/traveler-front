@@ -11,10 +11,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { login } from "../../services/authService";
+import { forgotPassword, login } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
+import logo from "../../../assets/logo.png";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -40,57 +42,92 @@ export default function Login({ navigation }) {
     setToken(token);
   };
 
+  const forgotMyPassword = async () => {
+    const { erro, response } = await forgotPassword(email);
+
+    if (erro) {
+      Alert.alert(mensagem);
+      return;
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={styles.title}>Login</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.inputPassword}
-              placeholder="Senha"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={togglePasswordVisibility}>
-              <Ionicons
-                name={showPassword ? "eye-off-outline" : "eye-outline"}
-                size={24}
-                color="gray"
-              />
-            </TouchableOpacity>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Image source={logo} style={styles.logo} />
+            <Text style={styles.titulo}>traveler</Text>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Entrar</Text>
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="white"
+              value={email}
+              autoCapitalize="none"
+              onChangeText={setEmail}
+            />
+
+            <View style={styles.inputArea}>
+              <TextInput
+                style={styles.input}
+                placeholder="Insira sua senha"
+                placeholderTextColor="#FFF"
+                onChangeText={setPassword}
+                value={password}
+                autoCapitalize="none"
+                secureTextEntry={showPassword}
+              />
+              <TouchableOpacity
+                style={styles.icone}
+                onPress={togglePasswordVisibility}
+              >
+                {showPassword ? (
+                  <Ionicons name="eye" color="#FFF" size={25} />
+                ) : (
+                  <Ionicons name="eye-off" color="#FFF" size={25} />
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.lembrarMeContainer}>
+              {/* <TouchableOpacity
+                  style={styles.lembrarMe}
+                  onPress={() => setLembrarMe(!lembrarMe)}
+                >
+                  {lembrarMe ? (
+                    <Ionicons name="checkbox-outline" color="#FFF" size={20} />
+                  ) : (
+                    <Ionicons name="square-outline" color="#FFF" size={20} />
+                  )}
+                  <Text style={styles.lembrarMeText}> Lembrar-me</Text>
+                </TouchableOpacity> */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ForgotPassword")}
+              >
+                <Text style={styles.esqueciSenhaText}>Esqueceu sua senha?</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.botaoEntrar} onPress={handleLogin}>
+            <Text style={styles.textobotao}>Entrar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.signupLink}
+            style={styles.acessoLogin}
             onPress={() => navigation.navigate("SignUp")}
           >
-            <Text style={styles.signupText}>
-              Não tem uma conta? Cadastre-se
-            </Text>
+            <Text style={styles.texto}>Ainda não possui uma conta?</Text>
+            <Text style={styles.login}>Cadastre-se agora!</Text>
+            <View style={styles.linha}></View>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -99,64 +136,107 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
-  scrollContainer: {
-    flexGrow: 1,
+    backgroundColor: "#00050D",
     justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+    paddingVertical: 20,
   },
-  title: {
+  header: {
+    alignItems: "center",
+    marginBottom: 50,
+  },
+  logo: {
+    width: 98,
+    height: 83,
+    marginBottom: 24,
+  },
+  titulo: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
+    letterSpacing: 6.2,
+    fontFamily: "Inter",
+    color: "#FFF",
+  },
+  form: {
+    paddingHorizontal: 50,
   },
   input: {
-    width: "100%",
-    height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    backgroundColor: "#fff",
+    fontSize: 18,
+    color: "#FFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#FFF",
+    marginBottom: 30,
+    padding: 10,
   },
-  passwordContainer: {
+  inputArea: {
+    position: "relative",
+    marginBottom: 15,
+  },
+  senhaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  showPasswordText: {
+    color: "#FFF",
+    fontSize: 14,
+  },
+  lembrarMeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    position: "absolute",
+    top: 130,
+    left: 48,
+    right: 50,
+  },
+  esqueciSenhaText: {
+    color: "#FFF",
+  },
+  lembrarMe: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
-    height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
+  },
+  lembrarMeText: {
+    color: "#FFF",
+    marginLeft: 5,
+  },
+  botaoEntrar: {
+    backgroundColor: "#007AFF",
+    padding: 15,
     borderRadius: 8,
-    paddingHorizontal: 15,
-    backgroundColor: "#fff",
-  },
-  inputPassword: {
-    flex: 1,
-    height: "100%",
-  },
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#007bff",
-    justifyContent: "center",
     alignItems: "center",
-    borderRadius: 8,
-    marginTop: 20,
+    marginHorizontal: 50,
+    marginBottom: 30,
+    marginTop: 50,
+    borderRadius: 40,
   },
-  buttonText: {
-    color: "#fff",
+  textobotao: {
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: "bold",
   },
-  signupLink: {
-    marginTop: 15,
+  acessoLogin: {
+    alignItems: "center",
   },
-  signupText: {
-    color: "#007bff",
-    fontSize: 16,
+  login: {
+    color: "#FFF",
+    textAlign: "center",
+    marginTop: 10,
+    paddingBottom: 5,
+  },
+  linha: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#FFF",
+    marginTop: 5,
+    width: 150,
+  },
+  icone: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+  },
+  texto: {
+    color: "#FFF",
+    textAlign: "center",
+    marginTop: 10,
+    paddingBottom: 5,
   },
 });
