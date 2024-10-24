@@ -8,6 +8,8 @@ import {
   Alert,
 } from "react-native";
 import React, { useLayoutEffect, useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { getBrands } from "../../services/brandService";
 
 export default function ProductBrandList({ navigation, route }) {
   const { selectBrand } = route.params;
@@ -20,6 +22,21 @@ export default function ProductBrandList({ navigation, route }) {
       headerTitle: "Selecionar Marca",
     });
   }, [navigation]);
+
+  useEffect(() => {
+    handleBrands();
+  }, []);
+
+  async function handleBrands() {
+    const response = await getBrands(token);
+
+    if (response.erro) {
+      Alert.info("Algum erro ocorreu");
+      return;
+    }
+
+    setBrandsData(response.data);
+  }
 
   const handleSelectBrand = (brand) => {
     selectBrand(brand);

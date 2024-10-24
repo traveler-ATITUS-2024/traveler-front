@@ -9,10 +9,13 @@ import {
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
+import { getProducts, deleteProduct } from "../../services/productService";
 
 export default function ProductList({ navigation }) {
   const [productsData, setProductsData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,9 +27,24 @@ export default function ProductList({ navigation }) {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    handleProducts();
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      handleProducts();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const addProduct = () => {
     navigation.navigate("ProductForm");
   };
+
+  async function handleProducts() {
+    const response = await getProducts(token);
+    setProductsData(response.data);
+  }
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
@@ -39,7 +57,7 @@ export default function ProductList({ navigation }) {
         <TouchableOpacity onPress={() => handleEdit(item)}>
           <Ionicons name="pencil-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item)}>
+        <TouchableOpacity onPress={() => handleDelete(item.id)}>
           <Ionicons name="trash-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -50,8 +68,21 @@ export default function ProductList({ navigation }) {
     navigation.navigate("ProductForm", { product });
   };
 
-  const handleDelete = (product) => {
-    console.log("Excluir produto com ID:", product);
+  const handleDelete = (productId) => {
+    Alert.alert("Deletar produto", "Deseja realmente deletar o produto?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          await deleteProduct(productId, token);
+          await handleProducts(token);
+        },
+        style: "confirm",
+      },
+    ]);
   };
 
   return (
@@ -79,6 +110,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   card: {
+    height: 200,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

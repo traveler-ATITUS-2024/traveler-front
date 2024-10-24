@@ -9,10 +9,13 @@ import {
 } from "react-native";
 import React, { useLayoutEffect, useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
+import { getBrands, deleteBrand } from "../../services/brandService";
 
 export default function BrandList({ navigation }) {
   const [brandsData, setBrandsData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -23,6 +26,27 @@ export default function BrandList({ navigation }) {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    handleBrands();
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      handleBrands();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  async function handleBrands() {
+    const response = await getBrands(token);
+
+    if (response.erro) {
+      Alert.info("Algum erro ocorreu");
+      return;
+    }
+
+    setBrandsData(response.data);
+  }
 
   const addBrand = () => {
     navigation.navigate("BrandForm");
@@ -35,7 +59,7 @@ export default function BrandList({ navigation }) {
         <TouchableOpacity onPress={() => handleEdit(item)}>
           <Ionicons name="pencil-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item)}>
+        <TouchableOpacity onPress={() => handleDelete(item.id)}>
           <Ionicons name="trash-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -43,11 +67,24 @@ export default function BrandList({ navigation }) {
   );
 
   const handleEdit = (brand) => {
-    navigation.navigate("BrandForm", { brand });
+    navigation.navigate("BrandForm", { brandToUpdate: brand });
   };
 
-  const handleDelete = (brand) => {
-    console.log("Excluir marca com ID:", brand);
+  const handleDelete = async (brandId) => {
+    Alert.alert("Deletar marca", "Deseja realmente deletar a marca?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          await deleteBrand(brandId, token);
+          await handleBrands(token);
+        },
+        style: "confirm",
+      },
+    ]);
   };
 
   return (

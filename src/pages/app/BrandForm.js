@@ -10,24 +10,45 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import { useAuth } from "../../context/AuthContext";
+import { createBrand, updateBrand } from "../../services/brandService";
 
 export default function BrandForm({ route, navigation }) {
-  const { brand } = route.params;
+  const brandToUpdate = route.params?.brandToUpdate;
   const [description, setDescription] = useState(
-    brand ? brand?.description : ""
+    brandToUpdate ? brandToUpdate.description : ""
   );
+  const { token } = useAuth();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: route.params?.brand ? "Editar Marca" : "Cadastrar Marca",
+      headerTitle: brandToUpdate ? "Editar Marca" : "Cadastrar Marca",
     });
   }, [navigation]);
 
-  const handleSave = () => {
+  useEffect(() => {
+    console.log(brandToUpdate);
+  }, []);
+
+  const handleSave = async () => {
     if (!description) {
       Alert.alert("Erro", "Por favor, preencha o campo de descrição.");
       return;
     }
+
+    let response = {};
+    if (brandToUpdate) {
+      response = await updateBrand(brandToUpdate.id, { description }, token);
+    } else {
+      response = await createBrand({ description }, token);
+    }
+
+    if (response.erro) {
+      Alert.alert("Algum erro ocorreu!");
+      return;
+    }
+
+    navigation.goBack();
   };
 
   return (
@@ -45,7 +66,7 @@ export default function BrandForm({ route, navigation }) {
 
         <TouchableOpacity style={styles.button} onPress={handleSave}>
           <Text style={styles.buttonText}>
-            {route.params?.brand ? "Salvar Alterações" : "Cadastrar"}
+            {brandToUpdate ? "Salvar" : "Cadastrar"}
           </Text>
         </TouchableOpacity>
       </ScrollView>

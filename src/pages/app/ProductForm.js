@@ -11,9 +11,13 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
+import { createProduct, updateProduct } from "../../services/productService";
 
 export default function ProductForm({ route, navigation }) {
-  const { product } = route.params;
+  const product = route.params?.product;
+  const { token } = useAuth();
+
   const [description, setDescription] = useState(
     product ? product?.description : ""
   );
@@ -39,6 +43,27 @@ export default function ProductForm({ route, navigation }) {
       Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
+
+    const productToSave = {
+      description,
+      price,
+      brandId,
+    };
+
+    let response = {};
+
+    if (product) {
+      response = await updateProduct(product.id, productToSave, token);
+    } else {
+      response = await createProduct(productToSave, token);
+    }
+
+    if (response.erro) {
+      Alert.alert("Algum erro ocorreu!");
+      return;
+    }
+
+    navigation.goBack();
   };
 
   return (
