@@ -24,16 +24,16 @@ const AppNavigator = () => {
   return (
     <AppStack.Navigator>
       <AppStack.Screen
-        name="Home"
+        name="HomeScreen"
         component={Home}
         options={{ headerShown: false }}
       />
-      <AppStack.Screen
+      {/* <AppStack.Screen
         name="PlacesAutocomplete"
         component={PlacesAutocomplete}
         options={{ headerShown: false }}
-      />
-      <AppStack.Screen
+      /> */}
+      {/* <AppStack.Screen
         name="ProductList"
         component={ProductList}
         options={{ headerTitle: "Produtos", headerTitleAlign: "center" }}
@@ -57,7 +57,7 @@ const AppNavigator = () => {
         name="ProductBrandList"
         component={ProductBrandList}
         options={{ headerTitle: "Marcas", headerTitleAlign: "center" }}
-      />
+      /> */}
     </AppStack.Navigator>
   );
 };
@@ -86,10 +86,12 @@ const AuthNavigator = () => {
 
 export default function AppRoutes() {
   const { setUser, setToken, user } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     try {
+      console.log("entrou");
+
       const credentials = await AsyncStorage.getItem("@userCredentials");
       if (credentials) {
         const { email, password } = JSON.parse(credentials);
@@ -108,10 +110,6 @@ export default function AppRoutes() {
     }
   };
 
-  useEffect(() => {
-    handleLogin();
-  }, []);
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -120,9 +118,5 @@ export default function AppRoutes() {
     );
   }
 
-  return (
-    <NavigationContainer>
-      {user ? <AppNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
-  );
+  return user ? <AppNavigator /> : <AuthNavigator />;
 }

@@ -9,12 +9,18 @@ import {
 import { useState } from "react";
 import logo from "../../../assets/logo.png";
 import fundomenu from "../../../assets/fundomenu.png";
-import PlacesAutocomplete from "../../routes/AppRoutes";
+import PlacesAutocomplete from "./PlacesAutocomplete";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Viagem({ navigation }) {
   const [mostraModal, setMostraModal] = useState(false);
   const { token } = useAuth();
+
+  const abreModal = () => {
+    console.log("aa");
+
+    setMostraModal(true);
+  };
 
   return (
     <View style={styles.container}>

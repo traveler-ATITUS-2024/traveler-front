@@ -7,6 +7,7 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import "react-native-get-random-values";
 import flecha from "../../../assets/flechaesquerda.png";
 
 export default function PlacesAutocomplete({ fechar }) {
