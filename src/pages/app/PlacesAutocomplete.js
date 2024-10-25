@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,10 +7,10 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import "react-native-get-random-values";
 import flecha from "../../../assets/flechaesquerda.png";
 
 export default function PlacesAutocomplete({ fechar }) {
+  const [dadosCidade, setDadosCidade] = useState("");
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -23,8 +23,9 @@ export default function PlacesAutocomplete({ fechar }) {
 
         <GooglePlacesAutocomplete
           placeholder="Qual o seu destino?"
-          onPress={(data, details = null) => {
-            console.log(data, details);
+          onPress={(_, details) => {
+            setDadosCidade(details);
+            console.log(dadosCidade.geometry.location);
           }}
           query={{
             key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
