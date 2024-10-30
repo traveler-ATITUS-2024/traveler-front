@@ -1,63 +1,109 @@
-import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import React, { useState } from "react";
+import { View, ActivityIndicator, Text, Image } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/authService";
+import casinha from "../../assets/casinha.png";
+import pessoa from "../../assets/pessoa.png";
 
 import Login from "../pages/auth/Login";
 import SignUp from "../pages/auth/SignUp";
 import ForgotPassword from "../pages/app/ForgotPassword";
 import Home from "../pages/app/Home";
-import ProductList from "../pages/app/ProductList";
-import ProductForm from "../pages/app/ProductForm";
-import ProductBrandList from "../pages/app/ProductBrandList";
-import BrandList from "../pages/app/BrandList";
-import BrandForm from "../pages/app/BrandForm";
-import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
+import Perfil from "../pages/app/Perfil";
 
-const AppStack = createNativeStackNavigator();
+const AppStack = createNativeStackNavigator()
 const AuthStack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
-const AppNavigator = () => {
+function TabRoutes() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: "#00050D", 
+          borderTopColor: "transparent", 
+          paddingBottom: 47, 
+          height: 65, 
+        },
+        tabBarActiveTintColor: "#0E6EFF", 
+        tabBarInactiveTintColor: "rgba(255,255,255,0.5)", 
+        headerShown: false,
+        tabBarLabelStyle: {
+          fontSize: 12, 
+        },
+      }}
+    >
+      <Tab.Screen
+        name="HomeTab"
+        component={Home} // Componente principal da home
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={casinha}
+              style={{
+                width: 32, 
+                height: 32, 
+                tintColor: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)", 
+                marginBottom: -5, 
+              }}
+            />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                color: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                fontSize: 12,
+              }}
+            ></Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="PerfilTab"
+        component={Perfil}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={pessoa}
+              style={{
+                width: 32, 
+                height: 32, 
+                tintColor: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)", 
+                marginBottom: -5, 
+              }}
+            />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                color: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                fontSize: 12,
+              }}
+            ></Text>
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+const HomeNavigator = () => {
   return (
     <AppStack.Navigator>
       <AppStack.Screen
-        name="HomeScreen"
+        name="Home"
         component={Home}
         options={{ headerShown: false }}
       />
       {/* <AppStack.Screen
-        name="PlacesAutocomplete"
-        component={PlacesAutocomplete}
+        name="Home"
+        component={Home}
         options={{ headerShown: false }}
       /> */}
-      {/* <AppStack.Screen
-        name="ProductList"
-        component={ProductList}
-        options={{ headerTitle: "Produtos", headerTitleAlign: "center" }}
-      />
-      <AppStack.Screen
-        name="ProductForm"
-        component={ProductForm}
-        options={{ headerTitle: "Produto", headerTitleAlign: "center" }}
-      />
-      <AppStack.Screen
-        name="BrandList"
-        component={BrandList}
-        options={{ headerTitle: "Marcas", headerTitleAlign: "center" }}
-      />
-      <AppStack.Screen
-        name="BrandForm"
-        component={BrandForm}
-        options={{ headerTitle: "Marca", headerTitleAlign: "center" }}
-      />
-      <AppStack.Screen
-        name="ProductBrandList"
-        component={ProductBrandList}
-        options={{ headerTitle: "Marcas", headerTitleAlign: "center" }}
-      /> */}
+      
     </AppStack.Navigator>
   );
 };
@@ -118,5 +164,5 @@ export default function AppRoutes() {
     );
   }
 
-  return user ? <AppNavigator /> : <AuthNavigator />;
+  return user ? <TabRoutes /> : <AuthNavigator />;
 }
