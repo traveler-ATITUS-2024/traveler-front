@@ -15,6 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function Viagem({ navigation }) {
   const [mostraModal, setMostraModal] = useState(false);
   const { token } = useAuth();
+  const [temViagem, setTemViagem] = useState(false);
 
   const abreModal = () => {
     console.log("aa");
@@ -30,9 +31,15 @@ export default function Viagem({ navigation }) {
 
       <Text style={styles.titulo}>traveler</Text>
 
-      <View>
-        <Image source={fundomenu} style={styles.imagemfundomenu} />
-      </View>
+      {temViagem ? (
+        <View>
+          <Text>VIAGEM 1</Text>
+        </View>
+      ) : (
+        <View>
+          <Image source={fundomenu} style={styles.imagemfundomenu}/>
+        </View>
+      )}
 
       <Text style={styles.texto}>Qual seu próximo destino?</Text>
 
@@ -46,7 +53,7 @@ export default function Viagem({ navigation }) {
       <View style={styles.linha}></View>
 
       <Modal visible={mostraModal} animationType="fade" transparent={true}>
-        <PlacesAutocomplete fechar={() => setMostraModal(false)} />
+        <PlacesAutocomplete fechar={() => setMostraModal(false)}/>
       </Modal>
     </View>
   );

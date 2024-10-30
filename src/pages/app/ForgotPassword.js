@@ -13,7 +13,6 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { forgotPassword, login } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";

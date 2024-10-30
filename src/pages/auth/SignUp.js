@@ -95,7 +95,7 @@ export default function SignUp({ navigation }) {
           <View style={styles.form}>
             <TextInput
               style={styles.input}
-              placeholder="Nome de Usuário"
+              placeholder="Nome Completo"
               placeholderTextColor="white"
               value={username}
               onChangeText={setUsername}

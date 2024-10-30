@@ -21,33 +21,39 @@ export default function PlacesAutocomplete({ fechar }) {
       <View style={styles.conteudopesquisa}>
         <Animated.View style={[styles.linha]} />
 
-        <GooglePlacesAutocomplete
-          placeholder="Qual o seu destino?"
-          onPress={(_, details) => {
-            setDadosCidade(details);
-            console.log(dadosCidade.geometry.location);
-          }}
-          query={{
-            key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
-            language: "pt-BR",
-          }}
-          fetchDetails={true}
-          styles={{
-            textInput: styles.textopesquisa,
-            listView: styles.suggestionList,
-          }}
-          textInputProps={{
-            placeholderTextColor: "rgba(255,255,255,0.65)",
-            style: styles.textopesquisa,
-          }}
-        />
+        <View style={styles.containerPesquisa}>
+          <TouchableOpacity 
+            onPress={fechar} 
+            style={styles.fundobotao}
+          >
+            <Image
+              source={flecha}
+              style={[styles.fundoicone, { tintColor: "#ffffff" }]}
+            />
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={fechar} style={styles.fundobotao}>
-          <Image
-            source={flecha}
-            style={[styles.fundoicone, { tintColor: "#ffffff" }]}
+          <GooglePlacesAutocomplete
+            placeholder="Qual o seu destino?"
+            onPress={(_, details) => {
+              setDadosCidade(details);
+              console.log(dadosCidade.geometry.location);
+            }}
+            query={{
+              key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
+              language: "pt-BR",
+            }}
+            fetchDetails={true}
+            styles={{
+              textInput: styles.textopesquisa,
+              listView: styles.suggestionList,
+            }}
+            textInputProps={{
+              placeholderTextColor: "rgba(255,255,255,0.65)",
+              style: styles.textopesquisa,
+            }}
           />
-        </TouchableOpacity>
+
+        </View>
       </View>
     </View>
   );
@@ -58,7 +64,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#00050D",
     flex: 1,
   },
-
+  containerPesquisa: {
+    backgroundColor: "#00050D",
+    marginTop: 28,
+    marginHorizontal: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 40,
+    paddingLeft: 15
+  },
   botaoinvisivel: {
     position: "absolute",
     top: 0,
@@ -89,13 +103,10 @@ const styles = StyleSheet.create({
   textopesquisa: {
     width: 320,
     backgroundColor: "#00050D",
-    marginTop: 28,
     height: 51,
     borderRadius: 40,
-    paddingLeft: 65,
+    paddingLeft: 5,
     color: "rgba(255,255,255,0.65)",
-    alignSelf: "center",
-    zIndex: 1,
   },
 
   suggestionList: {
@@ -106,18 +117,9 @@ const styles = StyleSheet.create({
   },
 
   fundobotao: {
-    position: "absolute",
-    left: 15,
-    top: 30,
-    zIndex: 3,
   },
 
   fundoicone: {
-    width: 25,
-    height: 25,
-    position: "absolute",
-    left: 35,
-    top: 20,
-    zIndex: 3,
+    width: 25, height: 25
   },
 });
