@@ -38,7 +38,7 @@ function TabRoutes() {
     >
       <Tab.Screen
         name="HomeTab"
-        component={Home} // Componente principal da home
+        component={Home}
         options={{
           tabBarIcon: ({ focused }) => (
             <Image

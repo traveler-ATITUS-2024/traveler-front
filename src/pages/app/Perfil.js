@@ -1,29 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
 
-const listaViagem = [
-{
-    id: 1,
-    nome: 'Viagem Marau',
-    dataIda: '2024-10-31T03:00:00.000+00:00',
-    dataVolta: '2024-11-02T03:00:00.000+00:00',
-    valorPrv: 870.00,
-    valorReal: 560.0,
-    latitude: '111111111',
-    longitude: '22222222',
-},
-{
-    id: 2,
-    nome: 'Viagem PF',
-    dataIda: '2024-10-31T03:00:00.000+00:00',
-    dataVolta: '2024-11-02T03:00:00.000+00:00',
-    valorPrv: 200.00,
-    valorReal: 600.0,
-    latitude: '111111111',
-    longitude: '22222222',
-}
-]
-
 export default function Perfil() {
   const nomeUsuario = 'Bernardo';
   const email = 'bernardo@gmail.com';
@@ -47,22 +24,20 @@ export default function Perfil() {
                 <Text>Alterar Senha</Text>
             </TouchableOpacity>
         </View>
+
+        <View>
+          <TouchableOpacity>
+            <Image src='../../assets/excluir.png'/>
+            <Text>Excluir Conta</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View>
-        <Text>Minhas Viagens:</Text>
-      </View>
-
-      <View>
-        <FlatList 
-            data={listaViagem}
-            renderItem={({item}) => (
-            <View>
-              <Text>{item.nome}</Text>
-            </View>)}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-        />
+      <TouchableOpacity>
+            <Image src='../../assets/sair.png'/>
+            <Text>Sair</Text>
+          </TouchableOpacity>
       </View>
     </View>
     
