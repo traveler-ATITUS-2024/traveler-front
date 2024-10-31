@@ -34,6 +34,7 @@ export default function PlacesAutocomplete({ fechar }) {
 
           <GooglePlacesAutocomplete
             placeholder="Qual o seu destino?"
+            enablePoweredByContainer={false}
             onPress={(_, details) => {
               setDadosCidade(details);
               console.log(dadosCidade.geometry.location);
@@ -45,7 +46,31 @@ export default function PlacesAutocomplete({ fechar }) {
             fetchDetails={true}
             styles={{
               textInput: styles.textopesquisa,
-              listView: styles.suggestionList,
+              listView: {
+                backgroundColor: '#00050D',
+                borderRadius: 10,
+                marginHorizontal: 10,
+                marginTop: 5,
+                marginLeft: -30,
+                height: "100%"
+              },
+              row: {
+                backgroundColor: '#00050D',
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+                borderBottomColor: '#00050D',
+                borderBottomWidth: 1,
+                borderRadius: 8,
+                marginTop: 5,
+              },
+              description: {
+                color: '#fff',
+                fontSize: 16,
+              },
+              separator: {
+                height: 0.5,
+                backgroundColor: '#00050D',
+              },
             }}
             textInputProps={{
               placeholderTextColor: "rgba(255,255,255,0.65)",
@@ -69,7 +94,6 @@ const styles = StyleSheet.create({
     marginTop: 28,
     marginHorizontal: 15,
     flexDirection: "row",
-    alignItems: "center",
     borderRadius: 40,
     paddingLeft: 15
   },
@@ -117,6 +141,7 @@ const styles = StyleSheet.create({
   },
 
   fundobotao: {
+    marginTop: 14
   },
 
   fundoicone: {
