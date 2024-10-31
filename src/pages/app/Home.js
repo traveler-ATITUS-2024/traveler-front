@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     letterSpacing: 6.2,
     fontFamily: "Inter",
+    fontWeight: "bold",
     color: "#FFF",
   },
   imagemfundomenu: {
