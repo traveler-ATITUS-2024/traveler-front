@@ -14,7 +14,7 @@ import ForgotPassword from "../pages/app/ForgotPassword";
 import Home from "../pages/app/Home";
 import Perfil from "../pages/app/Perfil";
 
-const AppStack = createNativeStackNavigator()
+const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -23,16 +23,16 @@ function TabRoutes() {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: "#00050D", 
-          borderTopColor: "transparent", 
-          paddingBottom: 47, 
-          height: 65, 
+          backgroundColor: "#00050D",
+          borderTopColor: "transparent",
+          paddingBottom: 47,
+          height: 65,
         },
-        tabBarActiveTintColor: "#0E6EFF", 
-        tabBarInactiveTintColor: "rgba(255,255,255,0.5)", 
+        tabBarActiveTintColor: "#0E6EFF",
+        tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
         headerShown: false,
         tabBarLabelStyle: {
-          fontSize: 12, 
+          fontSize: 12,
         },
       }}
     >
@@ -44,10 +44,10 @@ function TabRoutes() {
             <Image
               source={casinha}
               style={{
-                width: 32, 
-                height: 32, 
-                tintColor: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)", 
-                marginBottom: -5, 
+                width: 32,
+                height: 32,
+                tintColor: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                marginBottom: -5,
               }}
             />
           ),
@@ -69,10 +69,10 @@ function TabRoutes() {
             <Image
               source={pessoa}
               style={{
-                width: 32, 
-                height: 32, 
-                tintColor: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)", 
-                marginBottom: -5, 
+                width: 32,
+                height: 32,
+                tintColor: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                marginBottom: -5,
               }}
             />
           ),
@@ -103,7 +103,6 @@ const HomeNavigator = () => {
         component={Home}
         options={{ headerShown: false }}
       /> */}
-      
     </AppStack.Navigator>
   );
 };
@@ -136,8 +135,6 @@ export default function AppRoutes() {
 
   const handleLogin = async () => {
     try {
-      console.log("entrou");
-
       const credentials = await AsyncStorage.getItem("@userCredentials");
       if (credentials) {
         const { email, password } = JSON.parse(credentials);

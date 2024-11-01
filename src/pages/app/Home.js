@@ -18,8 +18,6 @@ export default function Viagem({ navigation }) {
   const [temViagem, setTemViagem] = useState(false);
 
   const abreModal = () => {
-    console.log("aa");
-
     setMostraModal(true);
   };
 
@@ -37,7 +35,7 @@ export default function Viagem({ navigation }) {
         </View>
       ) : (
         <View>
-          <Image source={fundomenu} style={styles.imagemfundomenu}/>
+          <Image source={fundomenu} style={styles.imagemfundomenu} />
         </View>
       )}
 
@@ -53,7 +51,7 @@ export default function Viagem({ navigation }) {
       <View style={styles.linha}></View>
 
       <Modal visible={mostraModal} animationType="fade" transparent={true}>
-        <PlacesAutocomplete fechar={() => setMostraModal(false)}/>
+        <PlacesAutocomplete fechar={() => setMostraModal(false)} />
       </Modal>
     </View>
   );

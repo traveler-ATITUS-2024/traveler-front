@@ -121,7 +121,12 @@ export default function Login({ navigation }) {
             <ActivityIndicator size="large" color="#FFF" />
           ) : (
             <TouchableOpacity style={styles.botaoEntrar} onPress={handleLogin}>
-              <Text style={styles.textobotao}>Entrar</Text>
+              <Text
+                style={styles.textobotao}
+                onPress={() => navigation.navigate("Home")}
+              >
+                Entrar
+              </Text>
             </TouchableOpacity>
           )}
 
