@@ -19,17 +19,17 @@ export default function Perfil() {
           source={require("../../../assets/logo.png")}
           style={styles.avatar}
         />
+        <Text style={styles.travelerText}>traveler</Text>
       </View>
+      
       <View style={styles.infousuario}>
         <View style={styles.nomeContainer}>
-          <Text style={styles.nomedousuario}>
-            Olá, {"\n"} {nomeUsuario}
-          </Text>
-          <TouchableOpacity style={ styles.botaolapis}>
-          <Image
-            source={require("../../../assets/lapizinhonome.png")}
-            style={styles.lapis}
-          />
+          <Text style={styles.nomedousuario}>Olá, {"\n"} {nomeUsuario}</Text>
+          <TouchableOpacity style={styles.botaolapis}>
+            <Image
+              source={require("../../../assets/lapizinhonome.png")}
+              style={styles.lapis}
+            />
           </TouchableOpacity>
         </View>
         <Text style={styles.email}>{email}</Text>
@@ -45,24 +45,28 @@ export default function Perfil() {
         </TouchableOpacity>
       </View>
 
-      <View>
-        <TouchableOpacity>
-          <Image src='../../assets/excluir.png'/>
-          <Text>Excluir Conta</Text>
+      <View style={styles.centeredButton}>
+        <TouchableOpacity style={styles.botaoexcluir}>
+          <Image
+            source={require("../../../assets/lixeiraexcluir.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.textoBotaoExcluir}>Excluir Conta</Text>
         </TouchableOpacity>
       </View>
 
-      <View>
-        <TouchableOpacity>
-          <Image src='../../assets/sair.png'/>
-          <Text>Sair</Text>
+      <View style={styles.centeredButton}>
+        <TouchableOpacity style={styles.botaosair}>
+          <Image
+            source={require("../../../assets/logout.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.textoBotaoSair}>Sair</Text>
         </TouchableOpacity>
       </View>
-
-      
 
       <View style={styles.linha}></View>
-    </View>
+      </View>
   );
 }
 
@@ -70,68 +74,115 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#00050D",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 50,
     alignItems: "center",
   },
   header: {
-    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 50,
-    marginTop: 70,
+    marginBottom: 30,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  travelerText: {
+    color: "#FFF",
+    fontSize: 24,
+    fontWeight: "bold",
+    letterSpacing: 6.2,
   },
   infousuario: {
-    marginRight: 100,
+    width: "100%",
+    paddingHorizontal: 20,
+    marginBottom: 30,
   },
-  nomeContainer:{
-    flexDirection: 'row', 
-    alignItems: 'center',
+  nomeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   nomedousuario: {
     color: "#FFF",
     fontSize: 18,
     fontWeight: "bold",
+    flex: 1,
+    textAlign: "left",
   },
   lapis: {
-    width: 16, 
-    height: 16, 
-    marginLeft: 25, 
+    width: 16,
+    height: 16,
+    marginLeft: 8,
   },
   email: {
     color: "#BBB",
     fontSize: 14,
-    marginTop: 10,
+    marginTop: 5,
+    textAlign: "left",
   },
   botaocontainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 20,
-    marginTop: 30,
+    width: "100%",
+    paddingHorizontal: 20,
+    marginBottom: 30,
   },
   botao: {
-    backgroundColor: "#0D1B24",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    backgroundColor: "#061730",
+    paddingVertical: 15,
+    borderRadius: 33,
+    width: 140,
+    alignItems: "center",
   },
   textobotao: {
     color: "#FFF",
     fontSize: 16,
   },
-  containerviagem: {
+  botaoexcluir: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FF3B30",
+    paddingVertical: 12,
+    borderRadius: 30,
+    width: "90%",
+    justifyContent: "center",
+  },
+  textoBotaoExcluir: {
     color: "#FFF",
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "bold",
+  },
+  botaosair: {
+    flexDirection: "row",
+    //alignItems: "center",
+    backgroundColor: "#0A54C2",
+    paddingVertical: 12,
+    borderRadius: 30,
+    width: 139,
+    justifyContent: "center",
+    marginLeft: 200,
+    marginTop: 230,
+  },
+  textoBotaoSair: {
+    color: "#FFF",
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "bold",
+  },
+  icon: {
+    width: 20,
+    height: 20,
+  },
+  centeredButton: {
+    width: "100%",
+    alignItems: "center",
+    marginVertical: 10,
   },
   linha: {
     borderBottomWidth: 1,
     borderBottomColor: "#FFF",
-    width: 150,
-    marginTop: 5,
     width: "100%",
+    marginTop: 20,
   },
 });
