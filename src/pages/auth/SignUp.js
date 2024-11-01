@@ -11,6 +11,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
@@ -25,6 +26,7 @@ export default function SignUp({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { setUser, setToken } = useAuth();
 
   useFocusEffect(
@@ -57,6 +59,8 @@ export default function SignUp({ navigation }) {
         return;
       }
 
+      setIsLoading(true);
+
       const { erro, data, mensagem } = await register(
         username,
         email,
@@ -77,6 +81,8 @@ export default function SignUp({ navigation }) {
       navigation.navigate("Login");
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao tentar cadastrar.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -155,12 +161,16 @@ export default function SignUp({ navigation }) {
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.botaoCadastrar}
-            onPress={handleRegister}
-          >
-            <Text style={styles.textobotao}>Cadastrar-se</Text>
-          </TouchableOpacity>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#FFF" />
+          ) : (
+            <TouchableOpacity
+              style={styles.botaoCadastrar}
+              onPress={handleRegister}
+            >
+              <Text style={styles.textobotao}>Cadastrar-se</Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             style={styles.acessoLogin}
