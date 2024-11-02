@@ -9,8 +9,9 @@ import {
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import flecha from "../../../assets/flechaesquerda.png";
 
-export default function PlacesAutocomplete({ fechar }) {
+export default function PlacesAutocomplete({ fechar, navigation }) {
   const [dadosCidade, setDadosCidade] = useState("");
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -35,15 +36,18 @@ export default function PlacesAutocomplete({ fechar }) {
           <GooglePlacesAutocomplete
             placeholder="Qual o seu destino?"
             enablePoweredByContainer={false}
+            filterReverseGeocodingByTypes={['location', 'administrative_area_level_3']}
+            fetchDetails={true}
             onPress={(_, details) => {
               setDadosCidade(details);
               console.log(dadosCidade.geometry.location);
+              navigation.navigate("CadastroViagem");
+              fechar();
             }}
             query={{
               key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
               language: "pt-BR",
             }}
-            fetchDetails={true}
             styles={{
               textInput: styles.textopesquisa,
               listView: {

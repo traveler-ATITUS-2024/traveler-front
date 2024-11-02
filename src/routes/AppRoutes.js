@@ -12,6 +12,8 @@ import Login from "../pages/auth/Login";
 import SignUp from "../pages/auth/SignUp";
 import ForgotPassword from "../pages/app/ForgotPassword";
 import Home from "../pages/app/Home";
+import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
+import CadastroViagem from "../pages/app/CadastroViagem";
 import Perfil from "../pages/app/Perfil";
 
 const AppStack = createNativeStackNavigator();
@@ -24,21 +26,18 @@ function TabRoutes() {
       screenOptions={{
         tabBarStyle: {
           backgroundColor: "#00050D",
-          borderTopColor: "transparent",
-          paddingBottom: 47,
-          height: 65,
+          height: 55,
+          paddingTop: 20,
         },
         tabBarActiveTintColor: "#0E6EFF",
         tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
         headerShown: false,
-        tabBarLabelStyle: {
-          fontSize: 12,
-        },
+        
       }}
     >
       <Tab.Screen
         name="HomeTab"
-        component={Home}
+        component={AppNavigator}
         options={{
           tabBarIcon: ({ focused }) => (
             <Image
@@ -90,7 +89,7 @@ function TabRoutes() {
   );
 }
 
-const HomeNavigator = () => {
+const AppNavigator = () => {
   return (
     <AppStack.Navigator>
       <AppStack.Screen
@@ -98,11 +97,16 @@ const HomeNavigator = () => {
         component={Home}
         options={{ headerShown: false }}
       />
-      {/* <AppStack.Screen
-        name="Home"
-        component={Home}
+      <AppStack.Screen
+        name="PlacesAutocomplete"
+        component={PlacesAutocomplete}
         options={{ headerShown: false }}
-      /> */}
+      />
+      <AppStack.Screen
+        name="CadastroViagem"
+        component={CadastroViagem}
+        options={{ headerShown: false }}
+      />
     </AppStack.Navigator>
   );
 };

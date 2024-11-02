@@ -10,7 +10,7 @@ import {
 
 export default function Perfil() {
   const nomeUsuario = "Bernardo Sozo Fattini";
-  const email = "bernardo@gmail.com";
+  const email = "bernardofattini@gmail.com";
 
   return (
     <View style={styles.container}>
@@ -24,7 +24,7 @@ export default function Perfil() {
       
       <View style={styles.infousuario}>
         <View style={styles.nomeContainer}>
-          <Text style={styles.nomedousuario}>Olá, {"\n"} {nomeUsuario}</Text>
+          <Text style={styles.nomedousuario}>Olá, {"\n"}{nomeUsuario}</Text>
           <TouchableOpacity style={styles.botaolapis}>
             <Image
               source={require("../../../assets/lapizinhonome.png")}
@@ -64,8 +64,6 @@ export default function Perfil() {
           <Text style={styles.textoBotaoSair}>Sair</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.linha}></View>
       </View>
   );
 }
@@ -122,7 +120,7 @@ const styles = StyleSheet.create({
   },
   botaocontainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     width: "100%",
     paddingHorizontal: 20,
     marginBottom: 30,
@@ -131,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#061730",
     paddingVertical: 15,
     borderRadius: 33,
-    width: 140,
+    width: 150,
     alignItems: "center",
   },
   textobotao: {
@@ -162,7 +160,7 @@ const styles = StyleSheet.create({
     width: 139,
     justifyContent: "center",
     marginLeft: 200,
-    marginTop: 230,
+    marginTop: 300,
   },
   textoBotaoSair: {
     color: "#FFF",

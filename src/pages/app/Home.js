@@ -48,10 +48,10 @@ export default function Viagem({ navigation }) {
         <Text style={styles.textobotao}>+ Adicionar nova viagem</Text>
       </TouchableOpacity>
 
-      <View style={styles.linha}></View>
-
       <Modal visible={mostraModal} animationType="fade" transparent={true}>
-        <PlacesAutocomplete fechar={() => setMostraModal(false)} />
+        <PlacesAutocomplete 
+        navigation={navigation}
+        fechar={() => setMostraModal(false)} />
       </Modal>
     </View>
   );
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 98,
     height: 83,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   titulo: {
     fontSize: 24,
