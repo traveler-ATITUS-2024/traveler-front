@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -7,30 +7,22 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import usePlacesAutocompleteController from "../../services/PlacesAutocompleteService";
 import flecha from "../../../assets/flechaesquerda.png";
 
 export default function PlacesAutocomplete({ fechar, navigation }) {
-  const [dadosCidade, setDadosCidade] = useState("");
+  const { salvarCidade } = usePlacesAutocompleteController(fechar);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.botaoinvisivel}
-        onPress={fechar}
-      ></TouchableOpacity>
+      <TouchableOpacity style={styles.botaoinvisivel} onPress={fechar}></TouchableOpacity>
 
       <View style={styles.conteudopesquisa}>
-        <Animated.View style={[styles.linha]} />
+        <Animated.View style={styles.linha} />
 
         <View style={styles.containerPesquisa}>
-          <TouchableOpacity 
-            onPress={fechar} 
-            style={styles.fundobotao}
-          >
-            <Image
-              source={flecha}
-              style={[styles.fundoicone, { tintColor: "#ffffff" }]}
-            />
+          <TouchableOpacity onPress={fechar} style={styles.fundobotao}>
+            <Image source={flecha} style={[styles.fundoicone, { tintColor: "#ffffff" }]} />
           </TouchableOpacity>
 
           <GooglePlacesAutocomplete
@@ -38,11 +30,9 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
             enablePoweredByContainer={false}
             filterReverseGeocodingByTypes={['location', 'administrative_area_level_3']}
             fetchDetails={true}
-            onPress={(_, details) => {
-              setDadosCidade(details);
-              console.log(dadosCidade.geometry.location);
-              navigation.navigate("CadastroViagem");
-              fechar();
+            onPress={async (_, details) => {
+              await salvarCidade(details); 
+              navigation.navigate("CadastroViagem"); 
             }}
             query={{
               key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
@@ -81,7 +71,6 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
               style: styles.textopesquisa,
             }}
           />
-
         </View>
       </View>
     </View>
@@ -110,7 +99,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     zIndex: 1,
   },
-
   conteudopesquisa: {
     width: "100%",
     height: "85%",
@@ -120,14 +108,12 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     zIndex: 2,
   },
-
   linha: {
     width: "15%",
     height: 3,
     backgroundColor: "rgba(255,255,255,0.50)",
     marginTop: 7,
   },
-
   textopesquisa: {
     width: 320,
     backgroundColor: "#00050D",
@@ -136,19 +122,17 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     color: "rgba(255,255,255,0.65)",
   },
-
   suggestionList: {
     backgroundColor: "#071222",
     borderRadius: 20,
     width: 320,
     alignSelf: "center",
   },
-
   fundobotao: {
-    marginTop: 14
+    marginTop: 14,
   },
-
   fundoicone: {
-    width: 25, height: 25
+    width: 25,
+    height: 25,
   },
 });
