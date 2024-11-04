@@ -9,61 +9,71 @@ import {
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import usePlacesAutocompleteController from "../../services/ViagemService";
 import flecha from "../../../assets/flechaesquerda.png";
+import { KEY } from "@env";
 
 export default function PlacesAutocomplete({ fechar, navigation }) {
   const { salvarCidade } = usePlacesAutocompleteController(fechar);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.botaoinvisivel} onPress={fechar}></TouchableOpacity>
+      <TouchableOpacity
+        style={styles.botaoinvisivel}
+        onPress={fechar}
+      ></TouchableOpacity>
 
       <View style={styles.conteudopesquisa}>
         <Animated.View style={styles.linha} />
 
         <View style={styles.containerPesquisa}>
           <TouchableOpacity onPress={fechar} style={styles.fundobotao}>
-            <Image source={flecha} style={[styles.fundoicone, { tintColor: "#ffffff" }]} />
+            <Image
+              source={flecha}
+              style={[styles.fundoicone, { tintColor: "#ffffff" }]}
+            />
           </TouchableOpacity>
 
           <GooglePlacesAutocomplete
             placeholder="Qual o seu destino?"
             enablePoweredByContainer={false}
-            filterReverseGeocodingByTypes={['location', 'administrative_area_level_3']}
+            filterReverseGeocodingByTypes={[
+              "location",
+              "administrative_area_level_3",
+            ]}
             fetchDetails={true}
             onPress={async (_, details) => {
-              await salvarCidade(details); 
-              navigation.navigate("CadastroViagem"); 
+              await salvarCidade(details);
+              navigation.navigate("CadastroViagem");
             }}
             query={{
-              key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
+              key: KEY,
               language: "pt-BR",
             }}
             styles={{
               textInput: styles.textopesquisa,
               listView: {
-                backgroundColor: '#00050D',
+                backgroundColor: "#00050D",
                 borderRadius: 10,
                 marginHorizontal: 10,
                 marginTop: 5,
                 marginLeft: -30,
-                height: "100%"
+                height: "100%",
               },
               row: {
-                backgroundColor: '#00050D',
+                backgroundColor: "#00050D",
                 paddingVertical: 12,
                 paddingHorizontal: 15,
-                borderBottomColor: '#00050D',
+                borderBottomColor: "#00050D",
                 borderBottomWidth: 1,
                 borderRadius: 8,
                 marginTop: 5,
               },
               description: {
-                color: '#fff',
+                color: "#fff",
                 fontSize: 16,
               },
               separator: {
                 height: 0.5,
-                backgroundColor: '#00050D',
+                backgroundColor: "#00050D",
               },
             }}
             textInputProps={{
@@ -88,7 +98,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     flexDirection: "row",
     borderRadius: 40,
-    paddingLeft: 15
+    paddingLeft: 15,
   },
   botaoinvisivel: {
     position: "absolute",
