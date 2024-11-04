@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import usePlacesAutocompleteController from "../../services/PlacesAutocompleteService";
+import usePlacesAutocompleteController from "../../services/ViagemService";
 import flecha from "../../../assets/flechaesquerda.png";
 
 export default function PlacesAutocomplete({ fechar, navigation }) {
