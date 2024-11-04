@@ -108,9 +108,10 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   lapis: {
-    width: 16,
-    height: 16,
-    marginLeft: 8,
+    width: 18,
+    height: 18,
+    marginTop: 10,
+    tintColor: "#0A54C2",
   },
   email: {
     color: "#BBB",
