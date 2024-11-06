@@ -6,11 +6,14 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import { useAuth } from "../../context/AuthContext";
+import excluirConta from "../../services/PerfilService";
 
 
 export default function Perfil() {
   const nomeUsuario = "Bernardo Sozo Fattini";
   const email = "bernardofattini@gmail.com";
+  const { token } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -46,7 +49,9 @@ export default function Perfil() {
       </View>
 
       <View style={styles.centeredButton}>
-        <TouchableOpacity style={styles.botaoexcluir}>
+        <TouchableOpacity style={styles.botaoexcluir}
+          onPress={excluirConta}
+        >
           <Image
             source={require("../../../assets/lixeiraexcluir.png")}
             style={styles.icon}
@@ -154,7 +159,6 @@ const styles = StyleSheet.create({
   },
   botaosair: {
     flexDirection: "row",
-    //alignItems: "center",
     backgroundColor: "#0A54C2",
     paddingVertical: 12,
     borderRadius: 30,
