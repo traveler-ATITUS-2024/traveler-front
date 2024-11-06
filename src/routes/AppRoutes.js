@@ -28,7 +28,7 @@ function TabRoutes() {
           backgroundColor: "#00050D",
           height: 55,
           paddingTop: 20,
-          paddingBottom: 40,
+          paddingBottom: 55,
         },
         tabBarActiveTintColor: "#0E6EFF",
         tabBarInactiveTintColor: "rgba(255,255,255,0.5)",

@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     width: 139,
     justifyContent: "center",
     marginLeft: 200,
-    marginTop: 300,
+    marginTop: 275,
   },
   textoBotaoSair: {
     color: "#FFF",

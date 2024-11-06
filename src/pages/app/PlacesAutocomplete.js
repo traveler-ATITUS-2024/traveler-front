@@ -7,12 +7,12 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import usePlacesAutocompleteController from "../../services/ViagemService";
-import flecha from "../../../assets/flechaesquerda.png";
+import ViagemService from "../../services/ViagemService";
+import flechaesquerda from "../../../assets/flechaesquerda.png";
 import { KEY } from "@env";
 
 export default function PlacesAutocomplete({ fechar, navigation }) {
-  const { salvarCidade } = usePlacesAutocompleteController(fechar);
+  const { salvarCidade } = ViagemService(fechar);
 
   return (
     <View style={styles.container}>
@@ -27,7 +27,7 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
         <View style={styles.containerPesquisa}>
           <TouchableOpacity onPress={fechar} style={styles.fundobotao}>
             <Image
-              source={flecha}
+              source={flechaesquerda}
               style={[styles.fundoicone, { tintColor: "#ffffff" }]}
             />
           </TouchableOpacity>
