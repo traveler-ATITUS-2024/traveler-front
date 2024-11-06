@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import excluirConta from "../../services/PerfilService";
+import { logout } from "../../services/authService";
 
 
 export default function Perfil() {
@@ -61,7 +62,9 @@ export default function Perfil() {
       </View>
 
       <View style={styles.centeredButton}>
-        <TouchableOpacity style={styles.botaosair}>
+        <TouchableOpacity style={styles.botaosair}
+          onPress={logout}
+        >
           <Image
             source={require("../../../assets/logout.png")}
             style={styles.icon}

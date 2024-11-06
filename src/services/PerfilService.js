@@ -7,7 +7,6 @@ const excluirConta = async () => {
       const response = await fetch(`https://traveler-api-n420.onrender.com/usuario/${user}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
