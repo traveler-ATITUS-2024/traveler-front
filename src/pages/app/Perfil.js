@@ -51,7 +51,10 @@ export default function Perfil() {
 
       <View style={styles.centeredButton}>
         <TouchableOpacity style={styles.botaoexcluir}
-          onPress={excluirConta}
+          onPress={() => {
+            excluirConta();
+            console.log("clicou");
+          }}
         >
           <Image
             source={require("../../../assets/lixeiraexcluir.png")}
@@ -63,7 +66,7 @@ export default function Perfil() {
 
       <View style={styles.centeredButton}>
         <TouchableOpacity style={styles.botaosair}
-          onPress={logout}
+          onPress={logout()}
         >
           <Image
             source={require("../../../assets/logout.png")}

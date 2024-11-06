@@ -1,21 +1,21 @@
 import { useAuth } from "../context/AuthContext";
+import api from "./api";
 
 const excluirConta = async () => {
-    const {token, user} = useAuth();
-
+    const { token, user } = useAuth();
+    console.log(token);
+    console.log(user);
     try {
-      const response = await fetch(`https://traveler-api-n420.onrender.com/usuario/${user}`, {
-        method: 'DELETE',
+      const response = await api.delete(`/usuario/${user}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
-
-      if (response.ok) {
+      console.log("Consultou");
+  
+      if (response.status === 200) {
         Alert.alert("Conta excluída com sucesso!");
-        console.log("Comunicou")
-      } else {
-        Alert.alert("Erro ao excluir a conta", "Tente novamente mais tarde.");
+        console.log("bombou")
       }
     } catch (error) {
       console.error(error);
