@@ -24,8 +24,6 @@ export const excluirConta = async (userId, token) => {
 
 export const alterarNome = async (userId, token, nome) => {
   try {
-    console.log(userId, nome);
-
     const response = await api.put(
       `usuario/${userId}`,
       { nome: nome },
@@ -46,4 +44,26 @@ export const alterarNome = async (userId, token, nome) => {
   }
 };
 
-export default { excluirConta, alterarNome };
+export const alterarSenha = async (userId, token, senhaAtual, senhaNova) => {
+  try {
+    const response = await api.put(
+      `usuario/${userId}`,
+      { senhaAtual: senhaAtual, senha: senhaNova },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response) {
+      Alert.alert("Sucesso!", "Sua senha foi alterada com sucesso.");
+      return true;
+    }
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro", "Ocorreu um erro ao alterar a senha.");
+  }
+};
+
+export default { excluirConta, alterarNome, alterarSenha };

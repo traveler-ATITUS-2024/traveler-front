@@ -66,7 +66,10 @@ export default function Perfil({ navigation }) {
           <Text style={styles.textobotao}>Editar Nome</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.botao}>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => navigation.navigate("EditarSenha")}
+        >
           <Text style={styles.textobotao}>Alterar Senha</Text>
         </TouchableOpacity>
       </View>

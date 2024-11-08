@@ -16,6 +16,7 @@ import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
 import CadastroViagem from "../pages/app/CadastroViagem";
 import Perfil from "../pages/app/Perfil";
 import EditarNome from "../pages/app/EditarNome";
+import EditarSenha from "../pages/app/EditarSenha";
 
 const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -111,6 +112,11 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="EditarNome"
         component={EditarNome}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="EditarSenha"
+        component={EditarSenha}
         options={{ headerShown: false }}
       />
     </AppStack.Navigator>
