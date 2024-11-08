@@ -15,6 +15,7 @@ import Home from "../pages/app/Home";
 import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
 import CadastroViagem from "../pages/app/CadastroViagem";
 import Perfil from "../pages/app/Perfil";
+import EditarNome from "../pages/app/EditarNome";
 
 const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -33,7 +34,6 @@ function TabRoutes() {
         tabBarActiveTintColor: "#0E6EFF",
         tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
         headerShown: false,
-        
       }}
     >
       <Tab.Screen
@@ -106,6 +106,11 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="CadastroViagem"
         component={CadastroViagem}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="EditarNome"
+        component={EditarNome}
         options={{ headerShown: false }}
       />
     </AppStack.Navigator>
