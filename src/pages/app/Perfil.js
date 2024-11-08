@@ -1,20 +1,30 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import excluirConta from "../../services/PerfilService";
+import { jwtDecode } from "jwt-decode";
 import { logout } from "../../services/authService";
-
 
 export default function Perfil() {
   const nomeUsuario = "Bernardo Sozo Fattini";
   const email = "bernardofattini@gmail.com";
   const { token } = useAuth();
+
+  const excluirMinhaConta = async () => {
+    try {
+      const decoded = jwtDecode(token);
+
+      const response = await excluirConta(decoded.id, token);
+
+      if (response) {
+        console.log("deu certo");
+
+        // logout();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -25,10 +35,13 @@ export default function Perfil() {
         />
         <Text style={styles.travelerText}>traveler</Text>
       </View>
-      
+
       <View style={styles.infousuario}>
         <View style={styles.nomeContainer}>
-          <Text style={styles.nomedousuario}>Olá, {"\n"}{nomeUsuario}</Text>
+          <Text style={styles.nomedousuario}>
+            Olá, {"\n"}
+            {nomeUsuario}
+          </Text>
           <TouchableOpacity style={styles.botaolapis}>
             <Image
               source={require("../../../assets/lapizinhonome.png")}
@@ -50,11 +63,9 @@ export default function Perfil() {
       </View>
 
       <View style={styles.centeredButton}>
-        <TouchableOpacity style={styles.botaoexcluir}
-          onPress={() => {
-            excluirConta();
-            console.log("clicou");
-          }}
+        <TouchableOpacity
+          style={styles.botaoexcluir}
+          onPress={excluirMinhaConta}
         >
           <Image
             source={require("../../../assets/lixeiraexcluir.png")}
@@ -65,9 +76,7 @@ export default function Perfil() {
       </View>
 
       <View style={styles.centeredButton}>
-        <TouchableOpacity style={styles.botaosair}
-          onPress={logout()}
-        >
+        <TouchableOpacity style={styles.botaosair} onPress={logout()}>
           <Image
             source={require("../../../assets/logout.png")}
             style={styles.icon}
@@ -75,7 +84,7 @@ export default function Perfil() {
           <Text style={styles.textoBotaoSair}>Sair</Text>
         </TouchableOpacity>
       </View>
-      </View>
+    </View>
   );
 }
 
@@ -113,7 +122,7 @@ const styles = StyleSheet.create({
   },
   nomedousuario: {
     color: "#FFF",
-    fontSize: 18,
+    fontSize: 21,
     fontWeight: "bold",
     flex: 1,
     textAlign: "left",

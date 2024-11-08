@@ -1,26 +1,25 @@
+import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import { logout } from "../services/authService";
 import api from "./api";
 
-const excluirConta = async () => {
-    const { token, user } = useAuth();
-    console.log(token);
-    console.log(user);
-    try {
-      const response = await api.delete(`/usuario/${user}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      console.log("Consultou");
-  
-      if (response.status === 200) {
-        Alert.alert("Conta excluída com sucesso!");
-        console.log("bombou")
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Erro", "Ocorreu um erro ao tentar excluir a conta.");
-    }
-  };
+export const excluirConta = async (userId, token) => {
+  try {
+    const response = await api.delete(`/usuario/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  export default excluirConta;
+    if (response) {
+      Alert.alert("Sucesso!", "Sua conta foi excluída com sucesso.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro", "Ocorreu um erro ao tentar excluir a conta.");
+  }
+};
+
+export default excluirConta;
