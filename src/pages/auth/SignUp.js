@@ -72,11 +72,6 @@ export default function SignUp({ navigation }) {
         return;
       }
 
-      const { name, token } = data;
-
-      setUser({ name });
-      setToken(token);
-
       Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
       navigation.navigate("Login");
     } catch (error) {

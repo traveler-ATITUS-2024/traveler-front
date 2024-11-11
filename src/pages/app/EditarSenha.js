@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
   Alert,
@@ -17,14 +16,16 @@ import { alterarSenha } from "../../services/PerfilService";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";
 import { jwtDecode } from "jwt-decode";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Login() {
   const [senhaNova1, setSenhaNova1] = useState("");
   const [senhaNova2, setSenhaNova2] = useState("");
   const [senhaAtual, setSenhaAtual] = useState("");
-  const [emailEnviado, setEmailEnviado] = useState(false);
   const { token } = useAuth();
   const decoded = jwtDecode(token);
+
+  const navigation = useNavigation();
 
   const alterarMinhaSenha = async () => {
     try {
@@ -40,9 +41,11 @@ export default function Login() {
         senhaNova1
       );
 
-      //   if (response) {
-      //     navigation.navigate("Perfil");
-      //   }
+      // if (response) {
+      //   navigation.navigate("AuthStack", {
+      //     screen: "Login",
+      //   });
+      // }
     } catch (error) {
       console.error(error);
     }
