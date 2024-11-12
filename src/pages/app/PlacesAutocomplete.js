@@ -7,16 +7,12 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import ViagemService from "../../services/ViagemService"; // Importar o hook customizado
 import flechaesquerda from "../../../assets/flechaesquerda.png";
 import { KEY } from "@env";
 
 export default function PlacesAutocomplete({ fechar, navigation }) {
-  const { definirCidade } = ViagemService();
-
   const handleSelectCity = (details) => {
     if (details) {
-      definirCidade(details);
       navigation.navigate("CadastroViagem", {
         cidadeSelecionada: details,
       });
@@ -25,7 +21,10 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.botaoinvisivel} onPress={fechar}></TouchableOpacity>
+      <TouchableOpacity
+        style={styles.botaoinvisivel}
+        onPress={fechar}
+      ></TouchableOpacity>
 
       <View style={styles.conteudopesquisa}>
         <Animated.View style={styles.linha} />

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -12,26 +12,93 @@ import {
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
 
+import { useAuth } from "../../context/AuthContext";
 import flechaesquerda from "../../../assets/flechaesquerda.png";
 import logo from "../../../assets/logo.png";
 import calendarioida from "../../../assets/calendarioida.png";
 import calendariovolta from "../../../assets/calendariovolta.png";
 import marcacaomapa from "../../../assets/marcacaomapa.png";
-import useViagemService from "../../services/ViagemService";
+import { adicionarViagem } from "../../services/ViagemService";
 import dayjs from "dayjs";
 
 LocaleConfig.locales["pt-br"] = ptBR;
 LocaleConfig.defaultLocale = "pt-br";
 
 export default function CadastroViagem({ navigation, route }) {
-  const service = useViagemService(navigation);
+  const { token } = useAuth();
+  const [calendarioVisivel, setCalendarioVisivel] = useState({
+    ida: false,
+    volta: false,
+  });
+  const [tituloViagem, setTituloViagem] = useState("");
+  const [dataIda, setDataIda] = useState(null);
+  const [dataVolta, setDataVolta] = useState(null);
+  const [cidade, setCidade] = useState("");
+  const [coordenadas, setCoordenadas] = useState({
+    latitude: null,
+    longitude: null,
+  });
+  const [gastoPrevisto, setGastoPrevisto] = useState("R$ 0,00");
 
-  // Define a cidade ao carregar a tela, se disponível nos parâmetros
+  const cidadeSelecionada = route?.params?.cidadeSelecionada;
+
   useEffect(() => {
-    if (route.params?.cidadeSelecionada) {
-      service.definirCidade(route.params.cidadeSelecionada);
+    if (cidadeSelecionada) {
+      const descricaoCidade =
+        cidadeSelecionada.description || cidadeSelecionada.formatted_address;
+      const latitude = cidadeSelecionada.geometry?.location?.lat;
+      const longitude = cidadeSelecionada.geometry?.location?.lng;
+
+      setCidade(descricaoCidade);
+      setCoordenadas({ latitude, longitude });
     }
-  }, [route.params?.cidadeSelecionada]);
+  }, [cidadeSelecionada]);
+
+  const adicionarNovaViagem = async () => {
+    try {
+      const response = await adicionarViagem(
+        tituloViagem,
+        dataIda,
+        dataVolta,
+        cidade,
+        gastoPrevisto,
+        coordenadas,
+        token
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const formataMoeda = (value) => {
+    let numericValue = value.replace(/\D/g, "");
+    if (numericValue.length === 0) {
+      numericValue = "0";
+    }
+    numericValue = (numericValue / 100).toFixed(2).replace(".", ",");
+    numericValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return `R$ ${numericValue}`;
+  };
+
+  // const definirCidade = (cidadeSelecionada) => {
+  //   if (!cidadeSelecionada) {
+  //     console.log("Nenhuma cidade selecionada");
+  //     return;
+  //   }
+
+  //   const descricaoCidade =
+  //     cidadeSelecionada.description || cidadeSelecionada.formatted_address;
+  //   const latitude = cidadeSelecionada.geometry?.location?.lat;
+  //   const longitude = cidadeSelecionada.geometry?.location?.lng;
+
+  //   setCidade(descricaoCidade);
+  //   setCoordenadas({ latitude, longitude });
+
+  //   console.log(`Cidade ${descricaoCidade} selecionada com sucesso`, {
+  //     latitude,
+  //     longitude,
+  //   });
+  // };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -52,18 +119,18 @@ export default function CadastroViagem({ navigation, route }) {
         <View style={styles.tituloContainer}>
           <TextInput
             style={styles.tituloInput}
-            value={service.tituloViagem}
+            value={tituloViagem}
             placeholder="Título da viagem:"
             placeholderTextColor="#888"
-            onChangeText={service.setTituloViagem}
+            onChangeText={setTituloViagem}
           />
         </View>
 
         <View style={styles.datas}>
           <TouchableOpacity
             onPress={() =>
-              service.setCalendarioVisivel({
-                ida: !service.calendarioVisivel.ida,
+              setCalendarioVisivel({
+                ida: !calendarioVisivel.ida,
                 volta: false,
               })
             }
@@ -71,46 +138,42 @@ export default function CadastroViagem({ navigation, route }) {
           >
             <Image source={calendarioida} style={styles.iconecalendario} />
             <Text style={styles.textoDatas}>
-              {service.dataIda
-                ? dayjs(service.dataIda).format("DD/MM/YYYY")
-                : "Data de ida"}
+              {dataIda ? dayjs(dataIda).format("DD/MM/YYYY") : "Data de ida"}
             </Text>
           </TouchableOpacity>
 
-          {service.calendarioVisivel.ida && (
+          {calendarioVisivel.ida && (
             <Calendar
               style={styles.calendario}
               theme={styles.temacalendario}
               minDate={new Date().toDateString()}
-              onDayPress={(day) => service.setDataIda(new Date(day.dateString))}
+              onDayPress={(day) => setDataIda(new Date(day.dateString))}
             />
           )}
 
           <TouchableOpacity
             onPress={() =>
-              service.setCalendarioVisivel({
+              setCalendarioVisivel({
                 ida: false,
-                volta: !service.calendarioVisivel.volta,
+                volta: !calendarioVisivel.volta,
               })
             }
             style={styles.dataContainer}
           >
             <Image source={calendariovolta} style={styles.iconecalendario} />
             <Text style={styles.textoDatas}>
-              {service.dataVolta
-                ? dayjs(service.dataVolta).format("DD/MM/YYYY")
+              {dataVolta
+                ? dayjs(dataVolta).format("DD/MM/YYYY")
                 : "Data de volta"}
             </Text>
           </TouchableOpacity>
 
-          {service.calendarioVisivel.volta && (
+          {calendarioVisivel.volta && (
             <Calendar
               style={styles.calendario}
               theme={styles.temacalendario}
               minDate={new Date().toDateString()}
-              onDayPress={(day) =>
-                service.setDataVolta(new Date(day.dateString))
-              }
+              onDayPress={(day) => setDataVolta(new Date(day.dateString))}
             />
           )}
         </View>
@@ -118,7 +181,7 @@ export default function CadastroViagem({ navigation, route }) {
         <View style={styles.cidadeContainer}>
           <Image source={marcacaomapa} style={styles.iconecalendario} />
           <Text style={styles.cidadeTexto}>
-            {service.cidade ? service.cidade : "Nenhuma cidade selecionada"}
+            {cidade ? cidade : "Nenhuma cidade selecionada"}
           </Text>
         </View>
 
@@ -126,10 +189,8 @@ export default function CadastroViagem({ navigation, route }) {
           <Text style={styles.gastoLabel}>Gasto previsto:</Text>
           <TextInput
             style={styles.inputGasto}
-            value={service.gastoPrevisto}
-            onChangeText={(value) =>
-              service.setGastoPrevisto(service.formataMoeda(value))
-            }
+            value={gastoPrevisto}
+            onChangeText={(value) => setGastoPrevisto(formataMoeda(value))}
             keyboardType="numeric"
             placeholderTextColor="#FFFF"
           />
@@ -137,7 +198,7 @@ export default function CadastroViagem({ navigation, route }) {
 
         <TouchableOpacity
           style={styles.botaoAdicionar}
-          onPress={service.adicionarViagem}
+          onPress={adicionarNovaViagem}
         >
           <Text style={styles.textoBotao}>+ Adicionar</Text>
         </TouchableOpacity>
@@ -145,7 +206,6 @@ export default function CadastroViagem({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
