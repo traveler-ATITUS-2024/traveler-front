@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   TextInput,
@@ -11,23 +11,30 @@ import {
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
-import ViagemService from "../../services/ViagemService";
 
 import flechaesquerda from "../../../assets/flechaesquerda.png";
 import logo from "../../../assets/logo.png";
 import calendarioida from "../../../assets/calendarioida.png";
 import calendariovolta from "../../../assets/calendariovolta.png";
 import marcacaomapa from "../../../assets/marcacaomapa.png";
+import useViagemService from "../../services/ViagemService";
+import dayjs from "dayjs";
 
 LocaleConfig.locales["pt-br"] = ptBR;
 LocaleConfig.defaultLocale = "pt-br";
 
-// Receba `navigation` como uma prop
-export default function CadastroViagem({ navigation }) {
-  const service = ViagemService();
+export default function CadastroViagem({ navigation, route }) {
+  const service = useViagemService(navigation);
+
+  // Define a cidade ao carregar a tela, se disponível nos parâmetros
+  useEffect(() => {
+    if (route.params?.cidadeSelecionada) {
+      service.definirCidade(route.params.cidadeSelecionada);
+    }
+  }, [route.params?.cidadeSelecionada]);
 
   return (
-    <TouchableWithoutFeedback onPress={service.ocultarTecladoECalendario}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity
@@ -54,12 +61,19 @@ export default function CadastroViagem({ navigation }) {
 
         <View style={styles.datas}>
           <TouchableOpacity
-            onPress={() => service.acaoCalendario("ida")}
+            onPress={() =>
+              service.setCalendarioVisivel({
+                ida: !service.calendarioVisivel.ida,
+                volta: false,
+              })
+            }
             style={styles.dataContainer}
           >
             <Image source={calendarioida} style={styles.iconecalendario} />
             <Text style={styles.textoDatas}>
-            {service.formatarData(service.dataIda, "ida")}
+              {service.dataIda
+                ? dayjs(service.dataIda).format("DD/MM/YYYY")
+                : "Data de ida"}
             </Text>
           </TouchableOpacity>
 
@@ -68,19 +82,24 @@ export default function CadastroViagem({ navigation }) {
               style={styles.calendario}
               theme={styles.temacalendario}
               minDate={new Date().toDateString()}
-              onDayPress={(day) =>
-                service.salvaDataIda(new Date(day.dateString))
-              }
+              onDayPress={(day) => service.setDataIda(new Date(day.dateString))}
             />
           )}
 
           <TouchableOpacity
-            onPress={() => service.acaoCalendario("volta")}
+            onPress={() =>
+              service.setCalendarioVisivel({
+                ida: false,
+                volta: !service.calendarioVisivel.volta,
+              })
+            }
             style={styles.dataContainer}
           >
             <Image source={calendariovolta} style={styles.iconecalendario} />
             <Text style={styles.textoDatas}>
-            {service.formatarData(service.dataVolta, "volta")}
+              {service.dataVolta
+                ? dayjs(service.dataVolta).format("DD/MM/YYYY")
+                : "Data de volta"}
             </Text>
           </TouchableOpacity>
 
@@ -90,7 +109,7 @@ export default function CadastroViagem({ navigation }) {
               theme={styles.temacalendario}
               minDate={new Date().toDateString()}
               onDayPress={(day) =>
-                service.salvaDataVolta(new Date(day.dateString))
+                service.setDataVolta(new Date(day.dateString))
               }
             />
           )}
@@ -104,27 +123,29 @@ export default function CadastroViagem({ navigation }) {
         </View>
 
         <View style={styles.gastoContainer}>
-            <Text style={styles.gastoLabel}>Gasto previsto:</Text>
-            <TextInput
-              style={styles.inputGasto}
-              value={service.gastoPrevisto}
-              onChangeText={service.formataValorInserido}
-              keyboardType="numeric"
-              placeholderTextColor="#FFFF"
-            />
+          <Text style={styles.gastoLabel}>Gasto previsto:</Text>
+          <TextInput
+            style={styles.inputGasto}
+            value={service.gastoPrevisto}
+            onChangeText={(value) =>
+              service.setGastoPrevisto(service.formataMoeda(value))
+            }
+            keyboardType="numeric"
+            placeholderTextColor="#FFFF"
+          />
         </View>
 
-          <TouchableOpacity
-            style={styles.botaoAdicionar}
-            onPress={service.addViagemDadosSalvos}
-          >
-            <Text style={styles.textoBotao}>+ Adicionar</Text>
-          </TouchableOpacity>
-
+        <TouchableOpacity
+          style={styles.botaoAdicionar}
+          onPress={service.adicionarViagem}
+        >
+          <Text style={styles.textoBotao}>+ Adicionar</Text>
+        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
