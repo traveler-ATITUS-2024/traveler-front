@@ -1,19 +1,25 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import excluirConta from "../../services/PerfilService";
 import { jwtDecode } from "jwt-decode";
 import { logout } from "../../services/authService";
 
-export default function Perfil() {
-  const nomeUsuario = "Bernardo Sozo Fattini";
-  const email = "bernardofattini@gmail.com";
+export default function Perfil({ navigation }) {
   const { token } = useAuth();
+  const decoded = jwtDecode(token);
+  const nomeUsuario = decoded.nome;
+  const email = decoded.email;
 
   const excluirMinhaConta = async () => {
     try {
-      const decoded = jwtDecode(token);
-
       const response = await excluirConta(decoded.id, token);
 
       if (response) {
@@ -53,11 +59,17 @@ export default function Perfil() {
       </View>
 
       <View style={styles.botaocontainer}>
-        <TouchableOpacity style={styles.botao}>
-          <Text style={styles.textobotao}>Editar Email</Text>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => navigation.navigate("EditarNome")}
+        >
+          <Text style={styles.textobotao}>Editar Nome</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.botao}>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => navigation.navigate("EditarSenha")}
+        >
           <Text style={styles.textobotao}>Alterar Senha</Text>
         </TouchableOpacity>
       </View>
