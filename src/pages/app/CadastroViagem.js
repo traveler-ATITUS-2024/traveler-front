@@ -11,6 +11,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   ScrollView,
+  Modal,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
@@ -79,26 +80,6 @@ export default function CadastroViagem({ navigation, route }) {
     }
   };
 
-  // const definirCidade = (cidadeSelecionada) => {
-  //   if (!cidadeSelecionada) {
-  //     console.log("Nenhuma cidade selecionada");
-  //     return;
-  //   }
-
-  //   const descricaoCidade =
-  //     cidadeSelecionada.description || cidadeSelecionada.formatted_address;
-  //   const latitude = cidadeSelecionada.geometry?.location?.lat;
-  //   const longitude = cidadeSelecionada.geometry?.location?.lng;
-
-  //   setCidade(descricaoCidade);
-  //   setCoordenadas({ latitude, longitude });
-
-  //   console.log(`Cidade ${descricaoCidade} selecionada com sucesso`, {
-  //     latitude,
-  //     longitude,
-  //   });
-  // };
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -148,16 +129,41 @@ export default function CadastroViagem({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
 
-              {calendarioVisivel.ida && (
-                <Calendar
-                  style={styles.calendario}
-                  theme={styles.temacalendario}
-                  minDate={new Date().toDateString()}
-                  onDayPress={(day) =>
-                    setDataIda(new Date(day.dateString).toISOString())
+              <Modal
+                visible={calendarioVisivel.ida}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() =>
+                  setCalendarioVisivel({ ...calendarioVisivel, ida: false })
+                }
+              >
+                <TouchableOpacity
+                  style={styles.modalOverlay}
+                  onPress={() =>
+                    setCalendarioVisivel({ ...calendarioVisivel, ida: false })
                   }
-                />
-              )}
+                  activeOpacity={1}
+                >
+                  <TouchableOpacity
+                    style={styles.modalContent}
+                    activeOpacity={1}
+                    onPress={() => {}}
+                  >
+                    <Calendar
+                      style={styles.calendario}
+                      theme={styles.temacalendario}
+                      minDate={new Date().toDateString()}
+                      onDayPress={(day) => {
+                        setDataIda(dayjs(day.dateString).toISOString());
+                        setCalendarioVisivel({
+                          ...calendarioVisivel,
+                          ida: false,
+                        });
+                      }}
+                    />
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              </Modal>
 
               <TouchableOpacity
                 onPress={() =>
@@ -179,16 +185,41 @@ export default function CadastroViagem({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
 
-              {calendarioVisivel.volta && (
-                <Calendar
-                  style={styles.calendario}
-                  theme={styles.temacalendario}
-                  minDate={new Date().toDateString()}
-                  onDayPress={(day) =>
-                    setDataVolta(new Date(day.dateString).toISOString())
+              <Modal
+                visible={calendarioVisivel.volta}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() =>
+                  setCalendarioVisivel({ ...calendarioVisivel, volta: false })
+                }
+              >
+                <TouchableOpacity
+                  style={styles.modalOverlay}
+                  onPress={() =>
+                    setCalendarioVisivel({ ...calendarioVisivel, volta: false })
                   }
-                />
-              )}
+                  activeOpacity={1}
+                >
+                  <TouchableOpacity
+                    style={styles.modalContent}
+                    activeOpacity={1}
+                    onPress={() => {}}
+                  >
+                    <Calendar
+                      style={styles.calendario}
+                      theme={styles.temacalendario}
+                      minDate={new Date().toDateString()}
+                      onDayPress={(day) => {
+                        setDataVolta(dayjs(day.dateString).toISOString());
+                        setCalendarioVisivel({
+                          ...calendarioVisivel,
+                          volta: false,
+                        });
+                      }}
+                    />
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              </Modal>
             </View>
 
             <View style={styles.cidadeContainer}>
@@ -255,6 +286,33 @@ const styles = StyleSheet.create({
   flecha: {
     width: 30,
     height: 30,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: 300,
+    height: 300,
+    borderRadius: 8,
+    padding: 10,
+    alignItems: "center",
+  },
+  calendario: {
+    width: 300,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  temacalendario: {
+    calendarBackground: "#fff",
+    todayTextColor: "#FFFFFF",
+    todayBackgroundColor: "#0E6EFF",
+    selectedDayBackgroundColor: "#888",
+    selectedDayTextColor: "#888",
+    arrowColor: "#0E6EFF",
+    monthTextColor: "#0E6EFF",
   },
   tituloContainer: {
     marginHorizontal: 16,
