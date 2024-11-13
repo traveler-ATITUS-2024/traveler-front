@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
+import CurrencyInput from "react-native-currency-input";
 
 import { useAuth } from "../../context/AuthContext";
 import flechaesquerda from "../../../assets/flechaesquerda.png";
@@ -34,11 +35,10 @@ export default function CadastroViagem({ navigation, route }) {
   const [dataIda, setDataIda] = useState(null);
   const [dataVolta, setDataVolta] = useState(null);
   const [cidade, setCidade] = useState("");
-  const [coordenadas, setCoordenadas] = useState({
-    latitude: null,
-    longitude: null,
-  });
-  const [gastoPrevisto, setGastoPrevisto] = useState("R$ 0,00");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [gastoPrevisto, setGastoPrevisto] = useState(0);
+  const [gastoReal, setGastoReal] = useState(0);
 
   const cidadeSelecionada = route?.params?.cidadeSelecionada;
 
@@ -50,7 +50,8 @@ export default function CadastroViagem({ navigation, route }) {
       const longitude = cidadeSelecionada.geometry?.location?.lng;
 
       setCidade(descricaoCidade);
-      setCoordenadas({ latitude, longitude });
+      setLatitude(latitude);
+      setLongitude(longitude);
     }
   }, [cidadeSelecionada]);
 
@@ -60,24 +61,15 @@ export default function CadastroViagem({ navigation, route }) {
         tituloViagem,
         dataIda,
         dataVolta,
-        cidade,
         gastoPrevisto,
-        coordenadas,
+        gastoReal,
+        latitude,
+        longitude,
         token
       );
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const formataMoeda = (value) => {
-    let numericValue = value.replace(/\D/g, "");
-    if (numericValue.length === 0) {
-      numericValue = "0";
-    }
-    numericValue = (numericValue / 100).toFixed(2).replace(".", ",");
-    numericValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return `R$ ${numericValue}`;
   };
 
   // const definirCidade = (cidadeSelecionada) => {
@@ -147,7 +139,9 @@ export default function CadastroViagem({ navigation, route }) {
               style={styles.calendario}
               theme={styles.temacalendario}
               minDate={new Date().toDateString()}
-              onDayPress={(day) => setDataIda(new Date(day.dateString))}
+              onDayPress={(day) =>
+                setDataIda(new Date(day.dateString).toISOString())
+              }
             />
           )}
 
@@ -173,7 +167,9 @@ export default function CadastroViagem({ navigation, route }) {
               style={styles.calendario}
               theme={styles.temacalendario}
               minDate={new Date().toDateString()}
-              onDayPress={(day) => setDataVolta(new Date(day.dateString))}
+              onDayPress={(day) =>
+                setDataVolta(new Date(day.dateString).toISOString())
+              }
             />
           )}
         </View>
@@ -187,12 +183,13 @@ export default function CadastroViagem({ navigation, route }) {
 
         <View style={styles.gastoContainer}>
           <Text style={styles.gastoLabel}>Gasto previsto:</Text>
-          <TextInput
+          <CurrencyInput
             style={styles.inputGasto}
             value={gastoPrevisto}
-            onChangeText={(value) => setGastoPrevisto(formataMoeda(value))}
+            onChangeValue={setGastoPrevisto}
             keyboardType="numeric"
             placeholderTextColor="#FFFF"
+            prefix="R$"
           />
         </View>
 

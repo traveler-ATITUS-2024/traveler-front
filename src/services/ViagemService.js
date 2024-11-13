@@ -1,30 +1,37 @@
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import api from "./api";
+import { Alert } from "react-native";
 
 export const adicionarViagem = async (
   tituloViagem,
   dataIda,
   dataVolta,
-  cidade,
   gastoPrevisto,
-  coordenadas,
+  gastoReal,
+  latitude,
+  longitude,
   token
 ) => {
   try {
-    console.log(tituloViagem);
-    console.log(dataIda);
-    console.log(dataVolta);
-    console.log(cidade);
-    console.log(gastoPrevisto);
-    console.log(coordenadas);
-    console.log(token);
-
-    const response = await api.post("/viagem", {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await api.post(
+      "/viagem",
+      {
+        statusId: 1,
+        nome: tituloViagem,
+        dataIda: dataIda,
+        dataVolta: dataVolta,
+        valorPrv: gastoPrevisto,
+        valorReal: gastoReal,
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (response) {
       Alert.alert("Sucesso!", "Viagem criada com sucesso.");
