@@ -16,6 +16,7 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
       navigation.navigate("CadastroViagem", {
         cidadeSelecionada: details,
       });
+      fechar();
     }
   };
 

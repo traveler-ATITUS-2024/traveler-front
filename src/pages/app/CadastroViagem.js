@@ -8,6 +8,9 @@ import {
   TouchableWithoutFeedback,
   Text,
   Keyboard,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
@@ -67,6 +70,10 @@ export default function CadastroViagem({ navigation, route }) {
         longitude,
         token
       );
+
+      if (response) {
+        navigation.navigate("Home");
+      }
     } catch (error) {
       console.error(error);
     }
@@ -93,113 +100,133 @@ export default function CadastroViagem({ navigation, route }) {
   // };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.flechaContainer}
-          >
-            <Image
-              source={flechaesquerda}
-              style={[styles.flecha, { tintColor: "#FFFF" }]}
-            />
-          </TouchableOpacity>
-          <Image source={logo} style={styles.logo} />
-        </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.flechaContainer}
+              >
+                <Image
+                  source={flechaesquerda}
+                  style={[styles.flecha, { tintColor: "#FFFF" }]}
+                />
+              </TouchableOpacity>
+              <Image source={logo} style={styles.logo} />
+            </View>
 
-        <View style={styles.tituloContainer}>
-          <TextInput
-            style={styles.tituloInput}
-            value={tituloViagem}
-            placeholder="Título da viagem:"
-            placeholderTextColor="#888"
-            onChangeText={setTituloViagem}
-          />
-        </View>
+            <View style={styles.tituloContainer}>
+              <TextInput
+                style={styles.tituloInput}
+                value={tituloViagem}
+                placeholder="Título da viagem:"
+                placeholderTextColor="#888"
+                onChangeText={setTituloViagem}
+              />
+            </View>
 
-        <View style={styles.datas}>
-          <TouchableOpacity
-            onPress={() =>
-              setCalendarioVisivel({
-                ida: !calendarioVisivel.ida,
-                volta: false,
-              })
-            }
-            style={styles.dataContainer}
-          >
-            <Image source={calendarioida} style={styles.iconecalendario} />
-            <Text style={styles.textoDatas}>
-              {dataIda ? dayjs(dataIda).format("DD/MM/YYYY") : "Data de ida"}
-            </Text>
-          </TouchableOpacity>
+            <View style={styles.datas}>
+              <TouchableOpacity
+                onPress={() =>
+                  setCalendarioVisivel({
+                    ida: !calendarioVisivel.ida,
+                    volta: false,
+                  })
+                }
+                style={styles.dataContainer}
+              >
+                <Image source={calendarioida} style={styles.iconecalendario} />
+                <Text style={styles.textoDatas}>
+                  {dataIda
+                    ? dayjs(dataIda).format("DD/MM/YYYY")
+                    : "Data de ida"}
+                </Text>
+              </TouchableOpacity>
 
-          {calendarioVisivel.ida && (
-            <Calendar
-              style={styles.calendario}
-              theme={styles.temacalendario}
-              minDate={new Date().toDateString()}
-              onDayPress={(day) =>
-                setDataIda(new Date(day.dateString).toISOString())
-              }
-            />
-          )}
+              {calendarioVisivel.ida && (
+                <Calendar
+                  style={styles.calendario}
+                  theme={styles.temacalendario}
+                  minDate={new Date().toDateString()}
+                  onDayPress={(day) =>
+                    setDataIda(new Date(day.dateString).toISOString())
+                  }
+                />
+              )}
 
-          <TouchableOpacity
-            onPress={() =>
-              setCalendarioVisivel({
-                ida: false,
-                volta: !calendarioVisivel.volta,
-              })
-            }
-            style={styles.dataContainer}
-          >
-            <Image source={calendariovolta} style={styles.iconecalendario} />
-            <Text style={styles.textoDatas}>
-              {dataVolta
-                ? dayjs(dataVolta).format("DD/MM/YYYY")
-                : "Data de volta"}
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  setCalendarioVisivel({
+                    ida: false,
+                    volta: !calendarioVisivel.volta,
+                  })
+                }
+                style={styles.dataContainer}
+              >
+                <Image
+                  source={calendariovolta}
+                  style={styles.iconecalendario}
+                />
+                <Text style={styles.textoDatas}>
+                  {dataVolta
+                    ? dayjs(dataVolta).format("DD/MM/YYYY")
+                    : "Data de volta"}
+                </Text>
+              </TouchableOpacity>
 
-          {calendarioVisivel.volta && (
-            <Calendar
-              style={styles.calendario}
-              theme={styles.temacalendario}
-              minDate={new Date().toDateString()}
-              onDayPress={(day) =>
-                setDataVolta(new Date(day.dateString).toISOString())
-              }
-            />
-          )}
-        </View>
+              {calendarioVisivel.volta && (
+                <Calendar
+                  style={styles.calendario}
+                  theme={styles.temacalendario}
+                  minDate={new Date().toDateString()}
+                  onDayPress={(day) =>
+                    setDataVolta(new Date(day.dateString).toISOString())
+                  }
+                />
+              )}
+            </View>
 
-        <View style={styles.cidadeContainer}>
-          <Image source={marcacaomapa} style={styles.iconecalendario} />
-          <Text style={styles.cidadeTexto}>
-            {cidade ? cidade : "Nenhuma cidade selecionada"}
-          </Text>
-        </View>
+            <View style={styles.cidadeContainer}>
+              <Image source={marcacaomapa} style={styles.iconecalendario} />
+              <Text
+                style={styles.cidadeTexto}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {cidade
+                  ? cidade.length > 30
+                    ? `${cidade.slice(0, 30)}...`
+                    : cidade
+                  : "Nenhuma cidade selecionada"}
+              </Text>
+            </View>
 
-        <View style={styles.gastoContainer}>
-          <Text style={styles.gastoLabel}>Gasto previsto:</Text>
-          <CurrencyInput
-            style={styles.inputGasto}
-            value={gastoPrevisto}
-            onChangeValue={setGastoPrevisto}
-            keyboardType="numeric"
-            placeholderTextColor="#FFFF"
-            prefix="R$"
-          />
-        </View>
+            <View style={styles.gastoContainer}>
+              <Text style={styles.gastoLabel}>Gasto previsto:</Text>
+              <CurrencyInput
+                style={styles.inputGasto}
+                value={gastoPrevisto}
+                onChangeValue={setGastoPrevisto}
+                keyboardType="numeric"
+                placeholderTextColor="#FFFF"
+                prefix="R$ "
+              />
+            </View>
 
-        <TouchableOpacity
-          style={styles.botaoAdicionar}
-          onPress={adicionarNovaViagem}
-        >
-          <Text style={styles.textoBotao}>+ Adicionar</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity
+              style={styles.botaoAdicionar}
+              onPress={adicionarNovaViagem}
+            >
+              <Text style={styles.textoBotao}>+ Adicionar</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
@@ -234,15 +261,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   tituloInput: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     borderBottomColor: "#888",
     color: "#888",
-    fontSize: 16,
-    paddingVertical: 4,
+    fontSize: 20,
+    paddingVertical: 10,
   },
   datas: {
+    borderBottomWidth: 2,
+    borderBottomColor: "#888",
+    paddingVertical: 8,
     marginHorizontal: 16,
-    marginTop: 20,
+    marginTop: 30,
   },
   dataContainer: {
     flexDirection: "row",
@@ -250,33 +280,37 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   iconecalendario: {
-    width: 24,
-    height: 24,
+    width: 36,
+    height: 36,
     marginRight: 8,
   },
   textoDatas: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
   },
   cidadeContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 20,
+    marginHorizontal: 12,
   },
   cidadeTexto: {
     color: "#FFFFFF",
-    fontSize: 18,
-    marginLeft: 10,
+    fontSize: 20,
+    marginLeft: 5,
+    fontWeight: "bold",
   },
   cidadeNegrito: {
     fontWeight: "bold",
   },
   gastoContainer: {
     marginTop: 50,
+    marginHorizontal: 15,
   },
   gastoLabel: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 28,
+    fontWeight: "bold",
   },
   inputGasto: {
     color: "#999",
