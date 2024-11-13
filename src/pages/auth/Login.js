@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { forgotPassword, login } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -26,6 +27,16 @@ export default function Login({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { setUser, setToken } = useAuth();
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setEmail("");
+        setPassword("");
+      };
+    }, [])
+  );
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
