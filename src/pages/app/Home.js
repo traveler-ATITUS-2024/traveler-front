@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../../assets/logo.png";
 import fundomenu from "../../../assets/fundomenu.png";
 import PlacesAutocomplete from "./PlacesAutocomplete";
@@ -17,6 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { jwtDecode } from "jwt-decode";
 import { buscarViagens } from "../../services/HomeService";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Viagem({ navigation }) {
   const [mostraModal, setMostraModal] = useState(false);
@@ -26,12 +27,18 @@ export default function Viagem({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [viagens, setViajens] = useState([]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      buscaMinhasViagens();
+    }, [])
+  );
+
   const buscaMinhasViagens = async () => {
     try {
       setLoading(true);
       const response = await buscarViagens(decoded.id, token);
 
-      if (response) {
+      if (response && response.length > 0) {
         setTemViagem(true);
         setViajens(response);
       } else {
@@ -45,9 +52,13 @@ export default function Viagem({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    buscaMinhasViagens();
-  }, []);
+  const adicionarNovaViagem = async () => {
+    try {
+      navigation.navigate("CadastroViagem");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -115,6 +126,18 @@ export default function Viagem({ navigation }) {
               </View>
             </View>
           ))}
+          <TouchableOpacity
+            style={styles.botaoAdicionar}
+            onPress={() => setMostraModal(true)}
+          >
+            <Text style={styles.textoBotaoAdd}>+ Adicionar</Text>
+          </TouchableOpacity>
+          <Modal visible={mostraModal} animationType="fade" transparent={true}>
+            <PlacesAutocomplete
+              navigation={navigation}
+              fechar={() => setMostraModal(false)}
+            />
+          </Modal>
         </>
       ) : (
         <View style={styles.view}>
@@ -263,5 +286,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  botaoAdicionar: {
+    backgroundColor: "#0E6EFF",
+    borderRadius: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    alignItems: "center",
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 50,
+    right: 20,
+  },
+  textoBotaoAdd: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
