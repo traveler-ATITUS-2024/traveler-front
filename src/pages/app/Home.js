@@ -5,23 +5,49 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from "react-native";
-import { useState } from "react";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import logo from "../../../assets/logo.png";
 import fundomenu from "../../../assets/fundomenu.png";
 import PlacesAutocomplete from "./PlacesAutocomplete";
 import calendarioida from "../../../assets/calendarioida.png";
 import { useAuth } from "../../context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
+import { jwtDecode } from "jwt-decode";
+import { buscarViagens } from "../../services/HomeService";
 
 export default function Viagem({ navigation }) {
   const [mostraModal, setMostraModal] = useState(false);
   const { token } = useAuth();
+  const decoded = jwtDecode(token);
   const [temViagem, setTemViagem] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [viagens, setViajens] = useState([]);
 
-  const abreModal = () => {
-    setMostraModal(true);
+  const buscaMinhasViagens = async () => {
+    try {
+      setLoading(true);
+      const response = await buscarViagens(decoded.id, token);
+
+      if (response) {
+        setTemViagem(true);
+        setViajens(response);
+      } else {
+        setTemViagem(false);
+      }
+    } catch (error) {
+      setTemViagem(false);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    buscaMinhasViagens();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -31,32 +57,65 @@ export default function Viagem({ navigation }) {
 
       <Text style={styles.titulo}>traveler</Text>
 
-      {temViagem ? (
-        <View style={styles.card}>
-          <View style={styles.row}>
-            <Text style={styles.tituloViagem}>Férias em Gramado</Text>
-            <View>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>Atual</Text>
+      {loading ? (
+        <ActivityIndicator style={styles.loading} size="large" color="#fff" />
+      ) : temViagem ? (
+        <>
+          {viagens.map((viagem, index) => (
+            <View key={index} style={styles.card}>
+              <View style={styles.row}>
+                <Text style={styles.tituloViagem}>
+                  {viagem.nome.length > 25
+                    ? `${viagem.nome.substring(0, 25)}...`
+                    : viagem.nome}
+                </Text>
+                <View>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      viagem.statusId === 1
+                        ? styles.statusBadgeAtual
+                        : styles.statusBadgeFinalizada,
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {viagem.statusId === 1 ? "Atual" : "Finalizada"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.detailsRow}>
+                <Ionicons name="wallet-outline" size={20} color="green" />
+                <Text style={styles.moneyTextGray}>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                    maximumFractionDigits: 0,
+                  }).format(viagem.valorPrv)}{" "}
+                </Text>
+                <Text style={styles.moneyText}>
+                  /{" "}
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(viagem.valorReal)}{" "}
+                </Text>
+
+                <View style={{ flex: 1 }} />
+
+                <Ionicons
+                  name="calendar-outline"
+                  size={20}
+                  color="white"
+                  style={styles.dateIcon}
+                />
+                <Text style={styles.dateText}>
+                  {dayjs(viagem.dataIda).format("DD/MM/YYYY")}
+                </Text>
               </View>
             </View>
-          </View>
-          <View style={styles.detailsRow}>
-            <Ionicons name="wallet-outline" size={20} color="green" />
-            <Text style={styles.moneyTextGray}>1.234 </Text>
-            <Text style={styles.moneyText}>/ R$ 5.000</Text>
-
-            <View style={{ flex: 1 }} />
-
-            <Ionicons
-              name="calendar-outline"
-              size={20}
-              color="white"
-              style={styles.dateIcon}
-            />
-            <Text style={styles.dateText}>12/09/2024</Text>
-          </View>
-        </View>
+          ))}
+        </>
       ) : (
         <View style={styles.view}>
           <Image source={fundomenu} style={styles.imagemfundomenu} />
@@ -152,7 +211,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#071222",
-    marginTop: 50,
+    marginTop: 20,
     borderRadius: 15,
     padding: 15,
     marginVertical: 10,
@@ -169,8 +228,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  statusBadge: {
+  statusBadgeAtual: {
     backgroundColor: "green",
+    borderRadius: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+  },
+  statusBadgeFinalizada: {
+    backgroundColor: "red",
     borderRadius: 10,
     paddingVertical: 4,
     paddingHorizontal: 12,
@@ -187,11 +252,16 @@ const styles = StyleSheet.create({
   },
   moneyTextGray: {
     color: "gray",
-    fontSize: 16,
+    fontSize: 15,
     marginLeft: 8,
   },
   moneyText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 15,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
