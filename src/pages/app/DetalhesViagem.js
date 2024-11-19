@@ -1,16 +1,45 @@
 import logo from "../../../assets/logo.png";
 
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Modal,
+  ActivityIndicator,
+} from "react-native";
 import { useRoute } from "@react-navigation/native";
 import dayjs from "dayjs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MapView, { Marker } from "react-native-maps";
+import { excluirViagem } from "../../services/ViagemService";
+import { useAuth } from "../../context/AuthContext";
 
-export default function DetalhesViagem() {
+export default function DetalhesViagem({ navigation }) {
   const route = useRoute();
   const { viagem } = route.params;
+  const { token } = useAuth();
+  const [modal, setModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const excluirMinhaViagem = async () => {
+    try {
+      setIsLoading(true);
+      const response = await excluirViagem(viagem.id, token);
+
+      if (response) {
+        navigation.navigate("Home");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setModal(false);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -67,7 +96,10 @@ export default function DetalhesViagem() {
             />
             <Text style={styles.buttonText}>Finalizar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteButton}>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => setModal(true)}
+          >
             <Ionicons name="trash-outline" size={16} color="#FFF" />
             <Text style={styles.buttonText}>Excluir</Text>
           </TouchableOpacity>
@@ -95,6 +127,39 @@ export default function DetalhesViagem() {
           />
         </MapView>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => setModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Você tem certeza que deseja excluir esta viagem?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonConfirm}
+                onPress={excluirMinhaViagem}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.modalButtonText}>Sim, Excluir</Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -228,5 +293,45 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
     borderRadius: 8,
     marginBottom: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 30,
+    backgroundColor: "#071222",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    color: "#fff",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  modalButtonConfirm: {
+    backgroundColor: "#dc3545",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonCancel: {
+    backgroundColor: "#6c757d",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });

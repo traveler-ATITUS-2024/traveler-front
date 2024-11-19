@@ -43,7 +43,26 @@ export const adicionarViagem = async (
   }
 };
 
-export default { adicionarViagem };
+export const excluirViagem = async (viagemId, token) => {
+  try {
+    const response = await api.delete(`/viagem/${viagemId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response) {
+      Alert.alert("Sucesso!", "Sua viagem foi excluída com sucesso.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro", "Ocorreu um erro ao tentar excluir a viagem.");
+  }
+};
+
+export default { adicionarViagem, excluirViagem };
 
 // const useViagemService = (navigation) => {
 // Função para salvar a viagem e enviar para api
