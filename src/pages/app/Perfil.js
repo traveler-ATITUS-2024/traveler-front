@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import excluirConta from "../../services/PerfilService";
 import { jwtDecode } from "jwt-decode";
 import { logout } from "../../services/authService";
+import logo from "../../../assets/logo.png";
 
 export default function Perfil({ navigation }) {
   const { token } = useAuth();
@@ -35,10 +36,7 @@ export default function Perfil({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require("../../../assets/logo.png")}
-          style={styles.avatar}
-        />
+        <Image source={logo} style={styles.avatar} />
         <Text style={styles.travelerText}>traveler</Text>
       </View>
 

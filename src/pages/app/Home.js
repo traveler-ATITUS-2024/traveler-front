@@ -52,14 +52,6 @@ export default function Viagem({ navigation }) {
     }
   };
 
-  const adicionarNovaViagem = async () => {
-    try {
-      navigation.navigate("CadastroViagem");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -73,7 +65,11 @@ export default function Viagem({ navigation }) {
       ) : temViagem ? (
         <>
           {viagens.map((viagem, index) => (
-            <View key={index} style={styles.card}>
+            <TouchableOpacity
+              key={index}
+              style={styles.card}
+              onPress={() => navigation.navigate("DetalhesViagem", { viagem })}
+            >
               <View style={styles.row}>
                 <Text style={styles.tituloViagem}>
                   {viagem.nome.length > 25
@@ -96,7 +92,7 @@ export default function Viagem({ navigation }) {
                 </View>
               </View>
               <View style={styles.detailsRow}>
-                <Ionicons name="wallet-outline" size={20} color="green" />
+                <Ionicons name="wallet-outline" size={20} color="#80F04E" />
                 <Text style={styles.moneyTextGray}>
                   {new Intl.NumberFormat("pt-BR", {
                     style: "currency",
@@ -111,9 +107,7 @@ export default function Viagem({ navigation }) {
                     currency: "BRL",
                   }).format(viagem.valorReal)}{" "}
                 </Text>
-
                 <View style={{ flex: 1 }} />
-
                 <Ionicons
                   name="calendar-outline"
                   size={20}
@@ -124,7 +118,7 @@ export default function Viagem({ navigation }) {
                   {dayjs(viagem.dataIda).format("DD/MM/YYYY")}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
           <TouchableOpacity
             style={styles.botaoAdicionar}
@@ -136,6 +130,7 @@ export default function Viagem({ navigation }) {
             <PlacesAutocomplete
               navigation={navigation}
               fechar={() => setMostraModal(false)}
+              f
             />
           </Modal>
         </>
@@ -252,7 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   statusBadgeAtual: {
-    backgroundColor: "green",
+    backgroundColor: "#80F04E",
     borderRadius: 10,
     paddingVertical: 4,
     paddingHorizontal: 12,
@@ -264,7 +259,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   statusText: {
-    color: "white",
+    color: "black",
     fontSize: 12,
     fontWeight: "bold",
   },

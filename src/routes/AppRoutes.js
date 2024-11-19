@@ -14,6 +14,7 @@ import ForgotPassword from "../pages/app/ForgotPassword";
 import Home from "../pages/app/Home";
 import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
 import CadastroViagem from "../pages/app/CadastroViagem";
+import DetalhesViagem from "../pages/app/DetalhesViagem";
 import Perfil from "../pages/app/Perfil";
 import EditarNome from "../pages/app/EditarNome";
 import EditarSenha from "../pages/app/EditarSenha";
@@ -107,6 +108,11 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="CadastroViagem"
         component={CadastroViagem}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="DetalhesViagem"
+        component={DetalhesViagem}
         options={{ headerShown: false }}
       />
       <AppStack.Screen
