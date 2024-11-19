@@ -147,14 +147,18 @@ export default function DetalhesViagem({ navigation }) {
                 {isLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.modalButtonText}>Sim, Excluir</Text>
+                  <Text style={styles.modalButtonText} disabled={isLoading}>
+                    Sim, Excluir
+                  </Text>
                 )}
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButtonCancel}
                 onPress={() => setModal(false)}
               >
-                <Text style={styles.modalButtonText}>Cancelar</Text>
+                <Text style={styles.modalButtonText} disabled={isLoading}>
+                  Cancelar
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
