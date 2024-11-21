@@ -62,7 +62,37 @@ export const excluirViagem = async (viagemId, token) => {
   }
 };
 
-export default { adicionarViagem, excluirViagem };
+export const finalizarViagem = async (viagemId, token) => {
+  try {
+    const response = await api.put(
+      `/viagem/${viagemId}`, 
+      {
+        statusId: 2,
+        nome: "Itajai com os guris",
+        dataIda: "2024-11-20T00:00:00.000+00:00",
+        dataVolta: "2024-11-22T00:00:00.000+00:00",
+        valorPrv: 2.00,
+        valorReal: 0.00,
+        latitude: "-26.9082859",
+        longitude: "-48.6775167" 
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+  );
+    if (response) {
+      Alert.alert("Sucesso!", "Sua viagem foi finalizada");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro ao finalizar a viagem");
+  }
+};
+export default { adicionarViagem, excluirViagem, finalizarViagem };
 
 // const useViagemService = (navigation) => {
 // Função para salvar a viagem e enviar para api

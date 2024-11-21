@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MapView, { Marker } from "react-native-maps";
-import { excluirViagem } from "../../services/ViagemService";
+import { excluirViagem, finalizarViagem } from "../../services/ViagemService";
 import { useAuth } from "../../context/AuthContext";
 
 export default function DetalhesViagem({ navigation }) {
@@ -28,7 +28,7 @@ export default function DetalhesViagem({ navigation }) {
   const excluirMinhaViagem = async () => {
     try {
       setIsLoading(true);
-      const response = await excluirViagem(viagem.id, token);
+      const response = await excluirViagem(viagem.Id, token);
 
       if (response) {
         navigation.navigate("Home");
@@ -40,6 +40,21 @@ export default function DetalhesViagem({ navigation }) {
       setIsLoading(false);
     }
   };
+
+  const finalizarMinhaViagem = async () => {
+    try {
+      setIsLoading(true);
+      const response = await finalizarViagem(viagem.id, token);
+
+      if (response) {
+        navigation.navigate("Home");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -88,7 +103,9 @@ export default function DetalhesViagem({ navigation }) {
           <Text style={styles.buttonText}>Meus Gastos</Text>
         </TouchableOpacity>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.finalizeButton}>
+          <TouchableOpacity style={styles.finalizeButton}
+            onPress={finalizarMinhaViagem}
+          >
             <MaterialCommunityIcons
               name="airplane-landing"
               size={16}
@@ -295,7 +312,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "#333",
-    borderRadius: 8,
+    borderRadius: 22,
     marginBottom: 20,
   },
   modalOverlay: {

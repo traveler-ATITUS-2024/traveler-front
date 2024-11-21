@@ -30,7 +30,7 @@ function TabRoutes() {
         tabBarStyle: {
           backgroundColor: "#00050D",
           height: 55,
-          paddingTop: 20,
+          paddingTop: 28,
           paddingBottom: 55,
         },
         tabBarActiveTintColor: "#0E6EFF",
