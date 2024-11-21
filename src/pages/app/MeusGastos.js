@@ -10,16 +10,40 @@ import {
   Modal,
   ActivityIndicator,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../../context/AuthContext";
+import { buscarDespesas } from "../../services/gastosService";
 
 export default function MeusGastos({ navigation }) {
   const route = useRoute();
   const { viagem } = route.params;
   const { token } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [despesas, setDespesas] = useState([]);
+  console.log(despesas);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      buscaMinhasDespesas();
+    }, [])
+  );
+
+  const buscaMinhasDespesas = async () => {
+    try {
+      setLoading(true);
+      const response = await buscarDespesas(viagem.id, token);
+
+      if (response) {
+        setDespesas(response);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -61,24 +85,26 @@ export default function MeusGastos({ navigation }) {
 
       <View style={styles.divider} />
 
-      <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons name="food" size={25} color="#FFF" />
-          <Text style={styles.buttonText}>Alimentação</Text>
-          <Text style={styles.valueText}>
-            {new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            }).format(viagem.valorReal)}{" "}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons name="bed" size={25} color="#FFF" />
-          <Text style={styles.buttonText}>Estadia</Text>
-          <Text style={styles.valueText}>R$ 820</Text>
-        </TouchableOpacity>
-      </View>
+      {loading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color="#FFF" />
+        </View>
+      ) : (
+        <View style={styles.actionContainer}>
+          {despesas.map((despesa, index) => (
+            <TouchableOpacity key={index} style={styles.button}>
+              <MaterialCommunityIcons name="food" size={25} color="#FFF" />
+              <Text style={styles.buttonText}>{categoria.nome}</Text>
+              <Text style={styles.valueText}>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(despesa.valorReal)}{" "}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
