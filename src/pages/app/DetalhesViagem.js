@@ -70,6 +70,12 @@ export default function DetalhesViagem({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
         <Image source={logo} style={styles.logo} />
       </View>
 
@@ -110,7 +116,10 @@ export default function DetalhesViagem({ navigation }) {
       <View style={styles.divider} />
 
       <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("MeusGastos", { viagem })}
+        >
           <Text style={styles.buttonText}>Meus Gastos</Text>
         </TouchableOpacity>
         <View style={styles.row}>
@@ -250,7 +259,11 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   backButton: {
-    marginRight: 10,
+    alignItems: "center",
+    alignSelf: "center",
+    position: "absolute",
+    top: 5,
+    left: 5,
   },
   logo: {
     width: 80,
