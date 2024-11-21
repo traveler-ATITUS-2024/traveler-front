@@ -23,12 +23,13 @@ export default function DetalhesViagem({ navigation }) {
   const { viagem } = route.params;
   const { token } = useAuth();
   const [modal, setModal] = useState(false);
+  const [modalFinalizarViagem, setmodalFinalizarViagem] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const excluirMinhaViagem = async () => {
     try {
       setIsLoading(true);
-      const response = await excluirViagem(viagem.Id, token);
+      const response = await excluirViagem(viagem.id, token);
 
       if (response) {
         navigation.navigate("Home");
@@ -44,7 +45,17 @@ export default function DetalhesViagem({ navigation }) {
   const finalizarMinhaViagem = async () => {
     try {
       setIsLoading(true);
-      const response = await finalizarViagem(viagem.id, token);
+      const response = await finalizarViagem(
+        viagem.id,
+        viagem.nome,
+        viagem.dataIda,
+        viagem.dataVolta,
+        viagem.valorPrv,
+        viagem.valorReal,
+        viagem.latitude,
+        viagem.longitude,
+        token
+      );
 
       if (response) {
         navigation.navigate("Home");
@@ -54,7 +65,7 @@ export default function DetalhesViagem({ navigation }) {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -103,8 +114,14 @@ export default function DetalhesViagem({ navigation }) {
           <Text style={styles.buttonText}>Meus Gastos</Text>
         </TouchableOpacity>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.finalizeButton}
-            onPress={finalizarMinhaViagem}
+          <TouchableOpacity
+            style={
+              viagem.statusId === 1
+                ? styles.finalizeButton
+                : styles.finalizeButtonDisabled
+            }
+            onPress={() => setmodalFinalizarViagem(true)}
+            disabled={isLoading || viagem.statusId === 2}
           >
             <MaterialCommunityIcons
               name="airplane-landing"
@@ -172,6 +189,43 @@ export default function DetalhesViagem({ navigation }) {
               <TouchableOpacity
                 style={styles.modalButtonCancel}
                 onPress={() => setModal(false)}
+              >
+                <Text style={styles.modalButtonText} disabled={isLoading}>
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalFinalizarViagem}
+        onRequestClose={() => setmodalFinalizarViagem(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Você tem certeza que deseja finalizar esta viagem?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonConfirm}
+                onPress={finalizarMinhaViagem}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.modalButtonText} disabled={isLoading}>
+                    Sim, Finalizar
+                  </Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setmodalFinalizarViagem(false)}
               >
                 <Text style={styles.modalButtonText} disabled={isLoading}>
                   Cancelar
@@ -275,6 +329,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  finalizeButtonDisabled: {
+    flex: 1,
+    backgroundColor: "#0A4DB3",
+    paddingVertical: 12,
+    marginHorizontal: 10,
+    borderRadius: 26,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    opacity: 0.6,
   },
   deleteButton: {
     flex: 1,
