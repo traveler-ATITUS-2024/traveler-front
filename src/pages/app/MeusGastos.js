@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -28,8 +29,18 @@ export default function MeusGastos({ navigation }) {
     (acc, categoria) => acc + categoria.totalDespesas,
     0
   );
-  
-  
+
+  const icones = {
+    1: "silverware-fork-knife",
+    2: "bed",
+    3: "car",
+    4: "shopping",
+    5: "ticket",
+    6: "security",
+    7: "hospital",
+  };
+
+
   useFocusEffect(
     React.useCallback(() => {
       buscarDespesaPorCategoria()
@@ -55,7 +66,7 @@ export default function MeusGastos({ navigation }) {
       setLoading(true);
       const response = await buscarDespesas(viagem.id, token);
 
-      
+
       if (response) {
         setDespesas(response);
       }
@@ -111,21 +122,36 @@ export default function MeusGastos({ navigation }) {
           <ActivityIndicator size="large" color="#FFF" />
         </View>
       ) : (
-        <View style={styles.actionContainer}>
-          {despesaDaCategoria.map((categoria, index) => (
-            <TouchableOpacity key={index} style={styles.button}>
-              <MaterialCommunityIcons name="folder" size={25} color="#FFF" />
-              <Text style={styles.buttonText}>{categoria.nome}</Text>
-              <Text style={styles.valueText}>
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(categoria.totalDespesas)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.actionContainer}>
+            {despesaDaCategoria.map((categoria, index) => (
+              <TouchableOpacity key={index} style={styles.button}>
+                <View style={styles.textContainer}>
+                  <MaterialCommunityIcons
+                    name={icones[categoria.categoriaId] || "folder"}
+                    size={25}
+                    color="#FFF"
+                  />
+                  <Text style={styles.buttonText}>
+                    {categoria.nome.length > 18 ? `${categoria.nome.substring(0, 18)}...` : categoria.nome}
+                  </Text>
+                </View>
+                <Text style={styles.valueText}>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(categoria.totalDespesas)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
       )}
+      <TouchableOpacity
+        style={styles.botao}
+      >
+        <Text style={styles.textobotao}>+ Adicionar Despesa</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -208,21 +234,29 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
   },
+  scrollContainer: {
+    flexGrow: 1,
+    marginBottom: 150,
+  },
   button: {
     width: "100%",
     backgroundColor: "#071222",
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: "center",
     marginBottom: 20,
-    flexDirection: "row",
+    flexDirection: "row", 
     justifyContent: "space-between",
+    alignItems: "center", 
   },
   valueText: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#FFF",
+  },
+  textContainer: {
+    flexDirection: "row", 
+    alignItems: "center",
   },
   row: {
     flexDirection: "row",
@@ -230,8 +264,24 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonText: {
-    fontSize: 18,
     color: "#FFF",
-    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 10, 
+  },
+  botao: {
+    backgroundColor: "#0E6EFF",
+    width: 315,
+    height: 51,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 50,
+  },
+  textobotao: {
+    color: "#FFF",
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
