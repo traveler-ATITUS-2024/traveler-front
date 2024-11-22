@@ -43,7 +43,66 @@ export const adicionarViagem = async (
   }
 };
 
-export default { adicionarViagem };
+export const excluirViagem = async (viagemId, token) => {
+  try {
+    const response = await api.delete(`/viagem/${viagemId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response) {
+      Alert.alert("Sucesso!", "Sua viagem foi excluída com sucesso.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro", "Ocorreu um erro ao tentar excluir a viagem.");
+  }
+};
+
+export const finalizarViagem = async (
+  viagemId,
+  nome,
+  dataIda,
+  dataVolta,
+  valorPrv,
+  valorReal,
+  latitude,
+  longitude,
+  token
+) => {
+  try {
+    const response = await api.put(
+      `/viagem/${viagemId}`,
+      {
+        statusId: 2,
+        nome: nome,
+        dataIda: dataIda,
+        dataVolta: dataVolta,
+        valorPrv: valorPrv,
+        valorReal: valorReal,
+        latitude: latitude,
+        longitude: longitude,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response) {
+      Alert.alert("Sucesso!", "Sua viagem foi finalizada");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro ao finalizar a viagem");
+  }
+};
+export default { adicionarViagem, excluirViagem, finalizarViagem };
 
 // const useViagemService = (navigation) => {
 // Função para salvar a viagem e enviar para api

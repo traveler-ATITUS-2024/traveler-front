@@ -52,14 +52,6 @@ export default function Viagem({ navigation }) {
     }
   };
 
-  const adicionarNovaViagem = async () => {
-    try {
-      navigation.navigate("CadastroViagem");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -72,60 +64,68 @@ export default function Viagem({ navigation }) {
         <ActivityIndicator style={styles.loading} size="large" color="#fff" />
       ) : temViagem ? (
         <>
-          {viagens.map((viagem, index) => (
-            <View key={index} style={styles.card}>
-              <View style={styles.row}>
-                <Text style={styles.tituloViagem}>
-                  {viagem.nome.length > 25
-                    ? `${viagem.nome.substring(0, 25)}...`
-                    : viagem.nome}
-                </Text>
-                <View>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      viagem.statusId === 1
-                        ? styles.statusBadgeAtual
-                        : styles.statusBadgeFinalizada,
-                    ]}
-                  >
-                    <Text style={styles.statusText}>
-                      {viagem.statusId === 1 ? "Atual" : "Finalizada"}
-                    </Text>
+          {viagens
+            .slice()
+            .sort((a, b) => b.id - a.id)
+            .slice(0, 3)
+            .map((viagem, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.card}
+                onPress={() =>
+                  navigation.navigate("DetalhesViagem", { viagem })
+                }
+              >
+                <View style={styles.row}>
+                  <Text style={styles.tituloViagem}>
+                    {viagem.nome.length > 25
+                      ? `${viagem.nome.substring(0, 25)}...`
+                      : viagem.nome}
+                  </Text>
+                  <View>
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        viagem.statusId === 1
+                          ? styles.statusBadgeAtual
+                          : styles.statusBadgeFinalizada,
+                      ]}
+                    >
+                      <Text style={styles.statusText}>
+                        {viagem.statusId === 1 ? "Atual" : "Finalizada"}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              <View style={styles.detailsRow}>
-                <Ionicons name="wallet-outline" size={20} color="green" />
-                <Text style={styles.moneyTextGray}>
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                    maximumFractionDigits: 0,
-                  }).format(viagem.valorPrv)}{" "}
-                </Text>
-                <Text style={styles.moneyText}>
-                  /{" "}
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(viagem.valorReal)}{" "}
-                </Text>
-
-                <View style={{ flex: 1 }} />
-
-                <Ionicons
-                  name="calendar-outline"
-                  size={20}
-                  color="white"
-                  style={styles.dateIcon}
-                />
-                <Text style={styles.dateText}>
-                  {dayjs(viagem.dataIda).format("DD/MM/YYYY")}
-                </Text>
-              </View>
-            </View>
-          ))}
+                <View style={styles.detailsRow}>
+                  <Ionicons name="wallet-outline" size={20} color="#80F04E" />
+                  <Text style={styles.moneyTextGray}>
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      maximumFractionDigits: 0,
+                    }).format(viagem.valorPrv)}{" "}
+                  </Text>
+                  <Text style={styles.moneyText}>
+                    /{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(viagem.valorReal)}{" "}
+                  </Text>
+                  <View style={{ flex: 1 }} />
+                  <Ionicons
+                    name="calendar-outline"
+                    size={20}
+                    color="white"
+                    style={styles.dateIcon}
+                  />
+                  <Text style={styles.dateText}>
+                    {dayjs(viagem.dataIda).format("DD/MM/YYYY")}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
           <TouchableOpacity
             style={styles.botaoAdicionar}
             onPress={() => setMostraModal(true)}
@@ -136,6 +136,7 @@ export default function Viagem({ navigation }) {
             <PlacesAutocomplete
               navigation={navigation}
               fechar={() => setMostraModal(false)}
+              f
             />
           </Modal>
         </>
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "bold",
     color: "#FFF",
+    marginBottom: 25,
   },
   view: {
     alignItems: "center",
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   statusBadgeAtual: {
-    backgroundColor: "green",
+    backgroundColor: "#80F04E",
     borderRadius: 10,
     paddingVertical: 4,
     paddingHorizontal: 12,
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   statusText: {
-    color: "white",
+    color: "black",
     fontSize: 12,
     fontWeight: "bold",
   },
