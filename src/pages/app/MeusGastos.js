@@ -14,7 +14,7 @@ import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../../context/AuthContext";
-import { buscarDespesas } from "../../services/gastosService";
+import { buscarDespesas, buscarDespesasDaCategoria } from "../../services/gastosService";
 
 export default function MeusGastos({ navigation }) {
   const route = useRoute();
@@ -22,19 +22,40 @@ export default function MeusGastos({ navigation }) {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [despesas, setDespesas] = useState([]);
-  console.log(despesas);
+  const [despesaDaCategoria, setDespesaDaCategoria] = useState([])
 
+  const totalDespesas = despesaDaCategoria.reduce(
+    (acc, categoria) => acc + categoria.totalDespesas,
+    0
+  );
+  
+  
   useFocusEffect(
     React.useCallback(() => {
-      buscaMinhasDespesas();
+      buscarDespesaPorCategoria()
+      buscaMinhasDespesas()
     }, [])
   );
+
+  const buscarDespesaPorCategoria = async () => {
+    try {
+      setLoading(true);
+      const response = await buscarDespesasDaCategoria(viagem.id, token)
+
+      if (response) {
+        setDespesaDaCategoria(response)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const buscaMinhasDespesas = async () => {
     try {
       setLoading(true);
       const response = await buscarDespesas(viagem.id, token);
 
+      
       if (response) {
         setDespesas(response);
       }
@@ -77,7 +98,7 @@ export default function MeusGastos({ navigation }) {
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(viagem.valorReal)}{" "}
+              }).format(totalDespesas)}{" "}
             </Text>
           </View>
         </View>
@@ -91,15 +112,15 @@ export default function MeusGastos({ navigation }) {
         </View>
       ) : (
         <View style={styles.actionContainer}>
-          {despesas.map((despesa, index) => (
+          {despesaDaCategoria.map((categoria, index) => (
             <TouchableOpacity key={index} style={styles.button}>
-              <MaterialCommunityIcons name="food" size={25} color="#FFF" />
+              <MaterialCommunityIcons name="folder" size={25} color="#FFF" />
               <Text style={styles.buttonText}>{categoria.nome}</Text>
               <Text style={styles.valueText}>
                 {new Intl.NumberFormat("pt-BR", {
                   style: "currency",
                   currency: "BRL",
-                }).format(despesa.valorReal)}{" "}
+                }).format(categoria.totalDespesas)}
               </Text>
             </TouchableOpacity>
           ))}
