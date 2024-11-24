@@ -1,3 +1,4 @@
+import { CommonActions } from "@react-navigation/native";
 import api from "./api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -68,6 +69,7 @@ export const forgotPassword = async (email) => {
 export const logout = async () => {
   try {
     await AsyncStorage.removeItem("@userCredentials");
+
     return { erro: false, mensagem: "Logout realizado com sucesso." };
   } catch (error) {
     console.error("Erro ao fazer logout:", error);
@@ -77,3 +79,4 @@ export const logout = async () => {
     };
   }
 };
+

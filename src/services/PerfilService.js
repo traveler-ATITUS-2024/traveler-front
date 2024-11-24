@@ -57,7 +57,7 @@ export const alterarSenha = async (userId, token, senhaAtual, senhaNova) => {
     );
 
     if (response) {
-      Alert.alert("Sucesso!", "Sua senha foi alterada com sucesso.");
+      Alert.alert("Sucesso", "Senha alterada com sucesso. Faça login novamente.");
       return true;
     }
   } catch (error) {
