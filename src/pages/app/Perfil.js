@@ -46,12 +46,6 @@ export default function Perfil({ navigation }) {
             Olá, {"\n"}
             {nomeUsuario}
           </Text>
-          <TouchableOpacity style={styles.botaolapis}>
-            <Image
-              source={require("../../../assets/lapizinhonome.png")}
-              style={styles.lapis}
-            />
-          </TouchableOpacity>
         </View>
         <Text style={styles.email}>{email}</Text>
       </View>
