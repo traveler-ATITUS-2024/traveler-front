@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   Modal,
-  Platform,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import CurrencyInput from "react-native-currency-input";
@@ -18,6 +17,16 @@ import flechaesquerda from "../../../assets/flechaesquerda.png";
 import calendario from "../../../assets/calendario.png";
 import relogio from "../../../assets/relogio.png";
 import dayjs from "dayjs";
+import RNPickerSelect from "react-native-picker-select";
+import Icon from "react-native-vector-icons/Ionicons";
+
+const categorias = [
+  { id: 1, descricao: "Alimentação" },
+  { id: 2, descricao: "Transporte" },
+  { id: 3, descricao: "Educação" },
+  { id: 4, descricao: "Lazer" },
+  { id: 5, descricao: "Saúde" },
+];
 
 export default function CadastroDespesa({ navigation, route }) {
   const { token } = useAuth();
@@ -26,6 +35,7 @@ export default function CadastroDespesa({ navigation, route }) {
   const [dataGasto, setDataGasto] = useState(null);
   const [horaGasto, setHoraGasto] = useState(new Date());
   const [valorDespesa, setValorDespesa] = useState(0);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
 
   const onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime || horaGasto;
@@ -143,6 +153,32 @@ export default function CadastroDespesa({ navigation, route }) {
           style={styles.tituloInput}
           placeholder="Título do gasto:"
           placeholderTextColor="#888"
+        />
+      </View>
+
+      <View style={styles.categoriaContainer}>
+        <RNPickerSelect
+          onValueChange={(value) => setCategoriaSelecionada(value)}
+          items={categorias.map((item) => ({
+            label: item.descricao,
+            value: item.id,
+          }))}
+          placeholder={{
+            label: "Selecione uma categoria",
+            value: null,
+            color: "#888",
+          }}
+          style={{
+            inputIOS: styles.picker,
+            inputAndroid: styles.picker,
+            iconContainer: styles.iconContainer,
+            placeholder: { color: "#FFF" },
+          }}
+          Icon={() => (
+            <Icon name="chevron-down" size={20} color="#FFF" 
+              style={{marginHorizontal: 16,}}
+            />
+          )}
         />
       </View>
     </View>
@@ -263,5 +299,21 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     marginRight: 8,
+  },
+  categoriaContainer: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    height: 50,
+    borderRadius: 40,
+    backgroundColor: "#071222",
+    justifyContent: 'center',
+  },
+  iconContainer: {
+    top: 14,
+  },
+  picker: {
+    color: "#FFF",
+    marginLeft: 6,
+    fontWeight: 'bold',
   },
 });
