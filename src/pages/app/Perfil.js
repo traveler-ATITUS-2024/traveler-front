@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,30 +6,62 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import excluirConta from "../../services/PerfilService";
 import { jwtDecode } from "jwt-decode";
 import { logout } from "../../services/authService";
 import logo from "../../../assets/logo.png";
+import { CommonActions } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Modal } from "react-native-web";
 
 export default function Perfil({ navigation }) {
   const { token } = useAuth();
   const decoded = jwtDecode(token);
   const nomeUsuario = decoded.nome;
   const email = decoded.email;
+  const { setUser, setToken } = useAuth();
+  const [modal, setModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const excluirMinhaConta = async () => {
     try {
       const response = await excluirConta(decoded.id, token);
 
       if (response) {
-        console.log("deu certo");
-
-        // logout();
+        Alert.alert("Até breve");
+        await logout();
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const sairDaConta = async () => {
+    try {
+      setIsLoading(true)
+      const response = await logout(); 
+
+      if (response) {
+        setUser(null);
+        setToken(null);
+  
+        await AsyncStorage.clear();
+  
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+          })
+        );
+      }
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -46,12 +78,6 @@ export default function Perfil({ navigation }) {
             Olá, {"\n"}
             {nomeUsuario}
           </Text>
-          <TouchableOpacity style={styles.botaolapis}>
-            <Image
-              source={require("../../../assets/lapizinhonome.png")}
-              style={styles.lapis}
-            />
-          </TouchableOpacity>
         </View>
         <Text style={styles.email}>{email}</Text>
       </View>
@@ -86,7 +112,7 @@ export default function Perfil({ navigation }) {
       </View>
 
       <View style={styles.centeredButton}>
-        <TouchableOpacity style={styles.botaosair} onPress={logout()}>
+        <TouchableOpacity style={styles.botaosair} onPress={sairDaConta}>
           <Image
             source={require("../../../assets/logout.png")}
             style={styles.icon}
@@ -94,6 +120,43 @@ export default function Perfil({ navigation }) {
           <Text style={styles.textoBotaoSair}>Sair</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => setModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Você tem certeza que deseja sair da conta?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonConfirm}
+                onPress={sairDaConta}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.modalButtonText} disabled={isLoading}>
+                    Sim, Sair
+                  </Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setModal(false)}
+              >
+                <Text style={styles.modalButtonText} disabled={isLoading}>
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -189,8 +252,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: 139,
     justifyContent: "center",
-    marginLeft: 200,
-    marginTop: 275,
+    position: "absolute",
+    right: 10,
+    top: 220
   },
   textoBotaoSair: {
     color: "#FFF",
@@ -212,5 +276,45 @@ const styles = StyleSheet.create({
     borderBottomColor: "#FFF",
     width: "100%",
     marginTop: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 30,
+    backgroundColor: "#071222",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    color: "#fff",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  modalButtonConfirm: {
+    backgroundColor: "#dc3545",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonCancel: {
+    backgroundColor: "#6c757d",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
