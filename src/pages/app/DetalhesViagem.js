@@ -220,7 +220,7 @@ export default function DetalhesViagem({ navigation }) {
             </Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity
-                style={styles.modalButtonConfirm}
+                style={[styles.modalButtonConfirm,{backgroundColor: '#0E6EFF'}]}
                 onPress={finalizarMinhaViagem}
                 disabled={isLoading}
               >

@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
@@ -43,6 +44,7 @@ export default function CadastroViagem({ navigation, route }) {
   const [longitude, setLongitude] = useState(null);
   const [gastoPrevisto, setGastoPrevisto] = useState(0);
   const [gastoReal, setGastoReal] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const cidadeSelecionada = route?.params?.cidadeSelecionada;
 
@@ -61,6 +63,7 @@ export default function CadastroViagem({ navigation, route }) {
 
   const adicionarNovaViagem = async () => {
     try {
+      setIsLoading(true);
       const response = await adicionarViagem(
         tituloViagem,
         dataIda,
@@ -253,7 +256,11 @@ export default function CadastroViagem({ navigation, route }) {
               style={styles.botaoAdicionar}
               onPress={adicionarNovaViagem}
             >
-              <Text style={styles.textoBotao}>+ Adicionar</Text>
+              {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.textoBotao}>+ Adicionar</Text>
+                )}
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -384,7 +391,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 120,
     marginBottom: 40,
-    marginLeft: 140,
+    marginLeft: 150,
+    width: 185,
   },
   textoBotao: {
     color: "#FFFFFF",
