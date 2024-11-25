@@ -427,16 +427,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginHorizontal: 5,
-    flex: 1, 
     width: 140,
   },
   modalButtonCancel: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginHorizontal: 5,
-    flex: 1, 
     width: 140,
   },
   modalButtonText: {

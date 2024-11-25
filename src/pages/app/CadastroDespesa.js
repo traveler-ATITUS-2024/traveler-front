@@ -180,7 +180,7 @@ export default function CadastroDespesa({ navigation }) {
               value={new Date()}
               mode="time"
               is24Hour={true}
-              display="clock"
+              display="default"
               onChange={onChangeTime}
             />
           </TouchableOpacity>
