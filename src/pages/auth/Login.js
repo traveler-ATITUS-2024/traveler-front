@@ -57,7 +57,6 @@ export default function Login({ navigation }) {
       setUser({ name });
       setToken(token);
 
-      navigation.navigate("Home");
     } catch (error) {
       console.error(error);
       Alert.alert("Erro ao realizar login. Tente novamente.");
