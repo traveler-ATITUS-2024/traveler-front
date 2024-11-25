@@ -19,13 +19,19 @@ import relogio from "../../../assets/relogio.png";
 import dayjs from "dayjs";
 import RNPickerSelect from "react-native-picker-select";
 import Icon from "react-native-vector-icons/Ionicons";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const categorias = [
-  { id: 1, descricao: "Alimentação" },
-  { id: 2, descricao: "Transporte" },
-  { id: 3, descricao: "Educação" },
-  { id: 4, descricao: "Lazer" },
-  { id: 5, descricao: "Saúde" },
+  { id: 1, nome: "Alimentação" },
+  { id: 2, nome: "Hospedagem" },
+  { id: 3, nome: "Transporte" },
+  { id: 4, nome: "Compras" },
+  { id: 5, nome: "Ingressos" },
+  { id: 6, nome: "Seguro e Documentação" },
+  { id: 7, nome: "Saúde e bem-estar" },
+  { id: 8, nome: "Outros" },
 ];
 
 export default function CadastroDespesa({ navigation, route }) {
@@ -33,12 +39,19 @@ export default function CadastroDespesa({ navigation, route }) {
   const [calendarioVisivel, setCalendarioVisivel] = useState(false);
   const [relogioVisivel, setRelogioVisivel] = useState(false);
   const [dataGasto, setDataGasto] = useState(null);
-  const [horaGasto, setHoraGasto] = useState(new Date());
+  const [horaGasto, setHoraGasto] = useState(() => {
+    const dataAtual = new Date();
+    const dataFuso = new Date(dataAtual.getTime() - 3 * 60 * 60 * 1000);
+    return dataFuso.toISOString();
+  });
   const [valorDespesa, setValorDespesa] = useState(0);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onChangeTime = (event, selectedTime) => {
-    const currentTime = selectedTime || horaGasto;
+    const currentTime = selectedTime
+      ? dayjs(selectedTime).utcOffset(-3).toDate()
+      : horaGasto;
     setRelogioVisivel(false);
     setHoraGasto(currentTime);
   };
@@ -117,7 +130,7 @@ export default function CadastroDespesa({ navigation, route }) {
       >
         <Image source={relogio} style={styles.iconerelogio} />
         <Text style={styles.textoHora}>
-          {horaGasto != Date() ? dayjs(horaGasto).format("HH:mm") : "Horário do gasto"}
+          {horaGasto ? dayjs(horaGasto).format("HH:mm") : "Horário do gasto"}
         </Text>
       </TouchableOpacity>
 
@@ -160,7 +173,7 @@ export default function CadastroDespesa({ navigation, route }) {
         <RNPickerSelect
           onValueChange={(value) => setCategoriaSelecionada(value)}
           items={categorias.map((item) => ({
-            label: item.descricao,
+            label: item.nome,
             value: item.id,
           }))}
           placeholder={{
@@ -181,6 +194,17 @@ export default function CadastroDespesa({ navigation, route }) {
           )}
         />
       </View>
+
+      <TouchableOpacity
+        style={styles.botaoAdicionar}
+      >
+        {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.textoBotao}>+ Adicionar</Text>
+          )}
+      </TouchableOpacity>
+
     </View>
   );
 }
@@ -225,7 +249,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 30,
-    marginHorizontal: 16,
+    marginHorizontal: 20,
     borderBottomWidth: 2,
     borderBottomColor: "#888",
   },
@@ -233,13 +257,15 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 22,
     fontWeight: "bold",
+    marginLeft: '2%',
   },
   inputGasto: {
     color: "#999",
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "bold",
     flex: 1,
     textAlign: "right",
+    marginRight: '2%',
   },
   dataContainer: {
     flexDirection: "row",
@@ -315,5 +341,20 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginLeft: 6,
     fontWeight: 'bold',
+  },
+  botaoAdicionar: {
+    backgroundColor: "#0E6EFF",
+    borderRadius: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    top: '90%',
+  },
+  textoBotao: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
