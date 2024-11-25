@@ -104,10 +104,10 @@ export default function CadastroDespesa({ navigation }) {
           value={valorDespesa}
           onChangeValue={setValorDespesa}
           keyboardType="numeric"
-          placeholderTextColor="#FFF"
           prefix="R$ "
         />
       </View>
+      <View style={styles.divider} />
 
       <TouchableOpacity
         onPress={() => setCalendarioVisivel(true)}
@@ -135,7 +135,7 @@ export default function CadastroDespesa({ navigation }) {
           <TouchableOpacity
             style={styles.modalContent}
             activeOpacity={1}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <Calendar
               style={styles.calendario}
@@ -174,7 +174,7 @@ export default function CadastroDespesa({ navigation }) {
           <TouchableOpacity
             style={styles.modalContent}
             activeOpacity={1}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <DateTimePicker
               value={new Date()}
@@ -197,6 +197,8 @@ export default function CadastroDespesa({ navigation }) {
         />
       </View>
 
+      <View style={styles.dividerNome} />
+
       <View style={styles.categoriaContainer}>
         <RNPickerSelect
           onValueChange={(value) => setCategoriaSelecionada(value)}
@@ -216,8 +218,8 @@ export default function CadastroDespesa({ navigation }) {
             placeholder: { color: "#FFF" },
           }}
           Icon={() => (
-            <Icon name="chevron-down" size={20} color="#FFF" 
-              style={{marginHorizontal: 16,}}
+            <Icon name="chevron-down" size={20} color="#FFF"
+              style={{ marginHorizontal: 16, }}
             />
           )}
         />
@@ -229,10 +231,10 @@ export default function CadastroDespesa({ navigation }) {
         disabled={isLoading}
       >
         {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.textoBotao}>+ Adicionar</Text>
-          )}
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.textoBotao}>+ Adicionar</Text>
+        )}
       </TouchableOpacity>
 
     </View>
@@ -243,6 +245,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#00050D",
+    paddingHorizontal: 10,
   },
   header: {
     flexDirection: "row",
@@ -266,11 +269,22 @@ const styles = StyleSheet.create({
   },
   tituloContainer: {
     marginHorizontal: 16,
-    marginBottom: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#888",
+    marginTop: 10,
+    width: "90%",
+    alignSelf: "center",
+  },
+  dividerNome: {
+    height: 1,
+    backgroundColor: "#888",
+    marginVertical: 5,
+    width: "90%",
+    alignSelf: "center",
   },
   tituloInput: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#888",
     color: "#FFF",
     fontSize: 20,
     paddingVertical: 10,
@@ -280,8 +294,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 30,
     marginHorizontal: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: "#888",
   },
   gastoLabel: {
     color: "#FFF",
@@ -300,9 +312,9 @@ const styles = StyleSheet.create({
   dataContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
     marginTop: 30,
     marginHorizontal: 16,
+    height: 50, 
   },
   modalOverlay: {
     flex: 1,
@@ -336,29 +348,29 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   iconecalendario: {
-    width: 36,
-    height: 36,
-    marginRight: 8,
+    width: 32, 
+    height: 32,
+    marginRight: 10, 
+  },
+  iconerelogio: {
+    width: 32, 
+    height: 32,
+    marginRight: 10, 
   },
   horaContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    marginTop: 20,
     marginHorizontal: 16,
+    height: 50, 
   },
   textoHora: {
     color: "#fff",
     fontSize: 18,
   },
-  iconerelogio: {
-    width: 32,
-    height: 32,
-    marginRight: 8,
-  },
   categoriaContainer: {
     marginHorizontal: 16,
-    marginTop: 10,
+    marginTop: 20,
     height: 50,
     borderRadius: 40,
     backgroundColor: "#071222",
@@ -371,6 +383,9 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginLeft: 6,
     fontWeight: 'bold',
+    paddingVertical: 12,
+    paddingLeft: 16,
+    fontSize: 16
   },
   botaoAdicionar: {
     backgroundColor: "#0E6EFF",
@@ -380,7 +395,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 20,
-    top: '90%',
+    top: '88%',
   },
   botaoAdicionarDisable: {
     backgroundColor: "#0E6EFF",
@@ -390,7 +405,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 20,
-    top: '90%',
+    top: '88%',
     opacity: 0.6,
   },
   textoBotao: {

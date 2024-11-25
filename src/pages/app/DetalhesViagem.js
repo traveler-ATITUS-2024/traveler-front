@@ -418,20 +418,25 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    justifyContent: "space-between", 
+    width: "100%", 
+    marginTop: 20, 
   },
   modalButtonConfirm: {
     backgroundColor: "#dc3545",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginHorizontal: 5,
+    flex: 1, 
   },
   modalButtonCancel: {
     backgroundColor: "#6c757d",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginHorizontal: 5,
+    flex: 1, 
   },
   modalButtonText: {
     color: "#fff",
