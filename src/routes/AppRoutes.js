@@ -20,6 +20,7 @@ import Perfil from "../pages/app/Perfil";
 import EditarNome from "../pages/app/EditarNome";
 import EditarSenha from "../pages/app/EditarSenha";
 import CadastroDespesa from "../pages/app/CadastroDespesa";
+import DespesaPorCategoria from "../pages/app/DespesaPorCategoria"
 
 const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -115,6 +116,11 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="CadastroDespesa"
         component={CadastroDespesa}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="DespesaPorCategoria"
+        component={DespesaPorCategoria}
         options={{ headerShown: false }}
       />
       <AppStack.Screen

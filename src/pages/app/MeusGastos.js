@@ -38,6 +38,7 @@ export default function MeusGastos({ navigation }) {
     5: "ticket",
     6: "security",
     7: "hospital",
+    8: "more"
   };
 
 
@@ -125,7 +126,9 @@ export default function MeusGastos({ navigation }) {
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.actionContainer}>
             {despesaDaCategoria.map((categoria, index) => (
-              <TouchableOpacity key={index} style={styles.button}>
+              <TouchableOpacity key={index} style={styles.button}
+                onPress={() => navigation.navigate("DespesaPorCategoria", { categoria, viagem })}
+              >
                 <View style={styles.textContainer}>
                   <MaterialCommunityIcons
                     name={icones[categoria.categoriaId] || "folder"}

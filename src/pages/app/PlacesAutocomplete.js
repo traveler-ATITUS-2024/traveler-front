@@ -48,7 +48,7 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
             fetchDetails={true}
             onPress={(data, details) => handleSelectCity(details)}
             query={{
-              key: "AIzaSyDgRNpVHxeabrd7SvG6WgALeXiSi5-JdAs",
+              key: KEY,
               language: "pt-BR",
             }}
             styles={{
