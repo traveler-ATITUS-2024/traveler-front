@@ -7,12 +7,18 @@ import {
   Image,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import ViagemService from "../../services/ViagemService";
 import flechaesquerda from "../../../assets/flechaesquerda.png";
 import { KEY } from "@env";
 
 export default function PlacesAutocomplete({ fechar, navigation }) {
-  const { salvarCidade } = ViagemService(fechar);
+  const handleSelectCity = (details) => {
+    if (details) {
+      navigation.navigate("CadastroViagem", {
+        cidadeSelecionada: details,
+      });
+      fechar();
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -40,10 +46,7 @@ export default function PlacesAutocomplete({ fechar, navigation }) {
               "administrative_area_level_3",
             ]}
             fetchDetails={true}
-            onPress={async (_, details) => {
-              await salvarCidade(details);
-              navigation.navigate("CadastroViagem");
-            }}
+            onPress={(data, details) => handleSelectCity(details)}
             query={{
               key: KEY,
               language: "pt-BR",

@@ -61,21 +61,12 @@ export default function SignUp({ navigation }) {
 
       setIsLoading(true);
 
-      const { erro, data, mensagem } = await register(
-        username,
-        email,
-        password
-      );
+      const { erro, data, mensagem } = await register(username, email, password);
 
       if (erro) {
         Alert.alert(mensagem);
         return;
       }
-
-      const { name, token } = data;
-
-      setUser({ name });
-      setToken(token);
 
       Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
       navigation.navigate("Login");
@@ -105,6 +96,7 @@ export default function SignUp({ navigation }) {
               placeholderTextColor="white"
               value={username}
               onChangeText={setUsername}
+              editable={!isLoading}
             />
 
             <TextInput
@@ -114,6 +106,7 @@ export default function SignUp({ navigation }) {
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
+              editable={!isLoading}
             />
 
             <View style={styles.inputArea}>
@@ -125,10 +118,12 @@ export default function SignUp({ navigation }) {
                 autoCapitalize="none"
                 value={password}
                 secureTextEntry={!showPassword}
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.icon}
                 onPress={togglePasswordVisibility}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <Ionicons name="eye" color="#FFF" size={25} />
@@ -147,10 +142,12 @@ export default function SignUp({ navigation }) {
                 autoCapitalize="none"
                 value={confirmPassword}
                 secureTextEntry={!showConfirmPassword}
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.icon}
                 onPress={toggleConfirmPasswordVisibility}
+                disabled={isLoading}
               >
                 {showConfirmPassword ? (
                   <Ionicons name="eye" color="#FFF" size={25} />
@@ -162,19 +159,23 @@ export default function SignUp({ navigation }) {
           </View>
 
           {isLoading ? (
-            <ActivityIndicator size="large" color="#FFF" />
+            <View style={[styles.botaoCadastrar, styles.botaoEntrarLoading]}>
+              <ActivityIndicator size="small" color="#FFF" />
+            </View>
           ) : (
             <TouchableOpacity
               style={styles.botaoCadastrar}
               onPress={handleRegister}
+              disabled={isLoading}
             >
               <Text style={styles.textobotao}>Cadastrar-se</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity
-            style={styles.acessoLogin}
+            style={[styles.acessoLogin, isLoading && styles.disabledButton]}
             onPress={() => navigation.navigate("Login")}
+            disabled={isLoading}
           >
             <Text style={styles.login}>Já possuo uma conta</Text>
             <View style={styles.linha}></View>
@@ -239,6 +240,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 20,
   },
+  botaoEntrarLoading: {
+    justifyContent: "center",
+    height: 50,
+  },
   textobotao: {
     color: "#FFF",
     fontSize: 18,
@@ -257,5 +262,8 @@ const styles = StyleSheet.create({
     borderBottomColor: "#FFF",
     width: 150,
     marginTop: 5,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
 });

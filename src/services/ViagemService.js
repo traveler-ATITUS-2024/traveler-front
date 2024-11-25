@@ -1,54 +1,120 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState } from "react";
-import { Keyboard } from "react-native";
+import { useState, useEffect } from "react";
+import dayjs from "dayjs";
+import api from "./api";
+import { Alert } from "react-native";
 
-const ViagemService = (fechar) => {
-  const [calendarioVisivel, setCalendarioVisivel] = useState(false);
-  const [selecionaCalendario, setSelecionaCalendario] = useState("");
+export const adicionarViagem = async (
+  tituloViagem,
+  dataIda,
+  dataVolta,
+  gastoPrevisto,
+  gastoReal,
+  latitude,
+  longitude,
+  token
+) => {
+  try {
+    const response = await api.post(
+      "/viagem",
+      {
+        statusId: 1,
+        nome: tituloViagem,
+        dataIda: dataIda,
+        dataVolta: dataVolta,
+        valorPrv: gastoPrevisto,
+        valorReal: gastoReal,
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  //Função para salvar a cidade e coordenadas
-  const salvarCidade = async (cidadeSelecionada) => {
-    if (!cidadeSelecionada) {
-      console.log("Nenhuma cidade selecionada");
-      return;
+    if (response) {
+      Alert.alert("Sucesso!", "Viagem criada com sucesso.");
     }
 
-    try {
-      //Pegando latitude e longitude e nome da cidade
-      const { lat, lng } = cidadeSelecionada.geometry.location;
-      const nomeCidade =
-        cidadeSelecionada.description || cidadeSelecionada.formatted_address;
-      //description faz pegar nome da cidade e país e formatted_address pega outros detralhes do endereço (hotel, rua, etc..)
-
-      console.log(`Latitude: ${lat}, Longitude: ${lng}`);
-
-      //Salva cidade e coordenadas no async
-      await AsyncStorage.setItem("@nomeCidade", nomeCidade);
-      await AsyncStorage.setItem(
-        "@coordenadasCidade",
-        JSON.stringify({ lat, lng })
-      );
-
-      console.log(`Cidade ${nomeCidade} salva com sucesso`);
-
-      //Fecha modal
-      fechar?.();
-    } catch (error) {
-      console.log("Erro ao salvar a cidade e coordenadas", error);
-    }
-  };
-
-  //Exibe e esconde o calendario ao clicar nos calendários
-  const acaoCalendario = (type) => {
-    if (selecionaCalendario === type && calendarioVisivel) {
-      setCalendarioVisivel(false);
-    } else {
-      setSelecionaCalendario(type);
-      setCalendarioVisivel(true);
-    }
-  };
-
-  return { salvarCidade, acaoCalendario };
+    return true;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
-export default ViagemService;
+export const excluirViagem = async (viagemId, token) => {
+  try {
+    const response = await api.delete(`/viagem/${viagemId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response) {
+      Alert.alert("Sucesso!", "Sua viagem foi excluída com sucesso.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro", "Ocorreu um erro ao tentar excluir a viagem.");
+  }
+};
+
+export const finalizarViagem = async (
+  viagemId,
+  nome,
+  dataIda,
+  dataVolta,
+  valorPrv,
+  valorReal,
+  latitude,
+  longitude,
+  token
+) => {
+  try {
+    const response = await api.put(
+      `/viagem/${viagemId}`,
+      {
+        statusId: 2,
+        nome: nome,
+        dataIda: dataIda,
+        dataVolta: dataVolta,
+        valorPrv: valorPrv,
+        valorReal: valorReal,
+        latitude: latitude,
+        longitude: longitude,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response) {
+      Alert.alert("Sucesso!", "Sua viagem foi finalizada");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro ao finalizar a viagem");
+  }
+};
+export default { adicionarViagem, excluirViagem, finalizarViagem };
+
+// const useViagemService = (navigation) => {
+// Função para salvar a viagem e enviar para api
+// const validaEEnviaViagem = async () => {
+//   try {
+//     // Validação dos dados da viagem
+//     if (!tituloViagem) throw new Error("O título da viagem é obrigatório.");
+//     if (!dataIda) throw new Error("A data de ida é obrigatória.");
+//     if (!dataVolta) throw new Error("A data de volta é obrigatória.");
+//     if (new Date(dataIda) > new Date(dataVolta)) {
+//       throw new Error("A data de volta não pode ser anterior à data de ida.");
+//     }
+//     if (!gastoPrevisto || gastoPrevisto === "R$ 0,00") {
+//       throw new Error("O gasto previsto é obrigatório.");
+//     }

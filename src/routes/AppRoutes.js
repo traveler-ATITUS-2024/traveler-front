@@ -14,7 +14,13 @@ import ForgotPassword from "../pages/app/ForgotPassword";
 import Home from "../pages/app/Home";
 import PlacesAutocomplete from "../pages/app/PlacesAutocomplete";
 import CadastroViagem from "../pages/app/CadastroViagem";
+import DetalhesViagem from "../pages/app/DetalhesViagem";
+import MeusGastos from "../pages/app/MeusGastos";
 import Perfil from "../pages/app/Perfil";
+import EditarNome from "../pages/app/EditarNome";
+import EditarSenha from "../pages/app/EditarSenha";
+import CadastroDespesa from "../pages/app/CadastroDespesa";
+import DespesaPorCategoria from "../pages/app/DespesaPorCategoria"
 
 const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -27,13 +33,12 @@ function TabRoutes() {
         tabBarStyle: {
           backgroundColor: "#00050D",
           height: 55,
-          paddingTop: 20,
+          paddingTop: 28,
           paddingBottom: 55,
         },
         tabBarActiveTintColor: "#0E6EFF",
         tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
         headerShown: false,
-        
       }}
     >
       <Tab.Screen
@@ -106,6 +111,36 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="CadastroViagem"
         component={CadastroViagem}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="CadastroDespesa"
+        component={CadastroDespesa}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="DespesaPorCategoria"
+        component={DespesaPorCategoria}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="DetalhesViagem"
+        component={DetalhesViagem}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="MeusGastos"
+        component={MeusGastos}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="EditarNome"
+        component={EditarNome}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="EditarSenha"
+        component={EditarSenha}
         options={{ headerShown: false }}
       />
     </AppStack.Navigator>

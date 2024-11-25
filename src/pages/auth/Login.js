@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { forgotPassword, login } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -26,6 +27,15 @@ export default function Login({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { setUser, setToken } = useAuth();
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setEmail("");
+        setPassword("");
+      };
+    }, [])
+  );
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -46,8 +56,10 @@ export default function Login({ navigation }) {
 
       setUser({ name });
       setToken(token);
+
     } catch (error) {
       console.error(error);
+      Alert.alert("Erro ao realizar login. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -73,6 +85,7 @@ export default function Login({ navigation }) {
               value={email}
               autoCapitalize="none"
               onChangeText={setEmail}
+              editable={!isLoading}
             />
 
             <View style={styles.inputArea}>
@@ -84,10 +97,12 @@ export default function Login({ navigation }) {
                 value={password}
                 autoCapitalize="none"
                 secureTextEntry={!showPassword}
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.icone}
                 onPress={togglePasswordVisibility}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <Ionicons name="eye" color="#FFF" size={25} />
@@ -97,44 +112,33 @@ export default function Login({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.lembrarMeContainer}>
-              {/* <TouchableOpacity
-                  style={styles.lembrarMe}
-                  onPress={() => setLembrarMe(!lembrarMe)}
-                >
-                  {lembrarMe ? (
-                    <Ionicons name="checkbox-outline" color="#FFF" size={20} />
-                  ) : (
-                    <Ionicons name="square-outline" color="#FFF" size={20} />
-                  )}
-                  <Text style={styles.lembrarMeText}> Lembrar-me</Text>
-                </TouchableOpacity> */}
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ForgotPassword")}
-              >
-                <Text style={styles.esqueciSenhaText}>Esqueceu sua senha?</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
+              disabled={isLoading}
+            >
+              <Text style={styles.esqueciSenhaText}>Esqueceu sua senha?</Text>
+            </TouchableOpacity>
           </View>
 
           {isLoading ? (
-            <ActivityIndicator size="large" color="#FFF" />
+            <View style={[styles.botaoEntrar, styles.botaoEntrarLoading]}>
+              <ActivityIndicator size="small" color="#FFF" />
+            </View>
           ) : (
-            <TouchableOpacity style={styles.botaoEntrar} onPress={handleLogin}>
-              <Text
-                style={styles.textobotao}
-                onPress={() => navigation.navigate("Home")}
-              >
-                Entrar
-              </Text>
+            <TouchableOpacity
+              style={styles.botaoEntrar}
+              onPress={handleLogin}
+              disabled={isLoading}
+            >
+              <Text style={styles.textobotao}>Entrar</Text>
             </TouchableOpacity>
           )}
-
+          <Text style={styles.texto}>Ainda não possui uma conta?</Text>
           <TouchableOpacity
-            style={styles.acessoLogin}
+            style={[styles.acessoLogin, isLoading && styles.disabledButton]}
             onPress={() => navigation.navigate("SignUp")}
+            disabled={isLoading}
           >
-            <Text style={styles.texto}>Ainda não possui uma conta?</Text>
             <Text style={styles.login}>Cadastre-se agora!</Text>
             <View style={styles.linha}></View>
           </TouchableOpacity>
@@ -179,7 +183,7 @@ const styles = StyleSheet.create({
   },
   inputArea: {
     position: "relative",
-    marginBottom: 15,
+    marginBottom: 8,
   },
   senhaContainer: {
     flexDirection: "row",
@@ -201,6 +205,7 @@ const styles = StyleSheet.create({
   },
   esqueciSenhaText: {
     color: "#FFF",
+    marginTop: -10,
   },
   lembrarMe: {
     flexDirection: "row",
@@ -212,13 +217,12 @@ const styles = StyleSheet.create({
   },
   botaoEntrar: {
     backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
+    paddingVertical: 15,
+    borderRadius: 40,
     alignItems: "center",
     marginHorizontal: 50,
     marginBottom: 30,
     marginTop: 50,
-    borderRadius: 40,
   },
   textobotao: {
     color: "#FFF",
@@ -249,5 +253,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
     paddingBottom: 5,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  botaoEntrarLoading: {
+    justifyContent: "center",
+    height: 50, 
   },
 });
