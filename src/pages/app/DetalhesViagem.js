@@ -426,12 +426,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    width: 140,
   },
   modalButtonCancel: {
-    backgroundColor: "#6c757d",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    width: 140,
   },
   modalButtonText: {
     color: "#fff",
@@ -439,6 +440,5 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
-    backgroundColor: "#6c757d"
   },
 });
