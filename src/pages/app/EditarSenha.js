@@ -16,16 +16,18 @@ import { alterarSenha } from "../../services/PerfilService";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";
 import { jwtDecode } from "jwt-decode";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
+import { logout } from "../../services/authService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Login() {
+export default function Login({navigation}) {
   const [senhaNova1, setSenhaNova1] = useState("");
   const [senhaNova2, setSenhaNova2] = useState("");
   const [senhaAtual, setSenhaAtual] = useState("");
   const { token } = useAuth();
   const decoded = jwtDecode(token);
+  const { setUser, setToken } = useAuth();
 
-  const navigation = useNavigation();
 
   const alterarMinhaSenha = async () => {
     try {
@@ -41,11 +43,19 @@ export default function Login() {
         senhaNova1
       );
 
-      // if (response) {
-      //   navigation.navigate("AuthStack", {
-      //     screen: "Login",
-      //   });
-      // }
+      if (response) {
+        setUser(null);
+        setToken(null);
+  
+        await AsyncStorage.clear();
+  
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+          })
+        );
+      }
     } catch (error) {
       console.error(error);
     }

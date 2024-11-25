@@ -188,20 +188,21 @@ export default function DetalhesViagem({ navigation }) {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator size="small" color="#fff" />
                 ) : (
-                  <Text style={styles.modalButtonText} disabled={isLoading}>
-                    Sim, Excluir
-                  </Text>
+                  <Text style={styles.modalButtonText}>Sim, Excluir</Text>
                 )}
               </TouchableOpacity>
+
               <TouchableOpacity
-                style={styles.modalButtonCancel}
+                style={[
+                  styles.modalButtonCancel,
+                  isLoading && styles.disabledButton,
+                ]}
                 onPress={() => setModal(false)}
+                disabled={isLoading}
               >
-                <Text style={styles.modalButtonText} disabled={isLoading}>
-                  Cancelar
-                </Text>
+                <Text style={styles.modalButtonText}>Cancelar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -220,25 +221,28 @@ export default function DetalhesViagem({ navigation }) {
             </Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity
-                style={[styles.modalButtonConfirm,{backgroundColor: '#0E6EFF'}]}
+                style={[
+                  styles.modalButtonConfirm,
+                  { backgroundColor: "#0E6EFF" },
+                ]}
                 onPress={finalizarMinhaViagem}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator size="small" color="#fff" />
                 ) : (
-                  <Text style={styles.modalButtonText} disabled={isLoading}>
-                    Sim, Finalizar
-                  </Text>
+                  <Text style={styles.modalButtonText}>Sim, Finalizar</Text>
                 )}
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalButtonCancel}
+                style={[
+                  styles.modalButtonCancel,
+                  isLoading && styles.disabledButton,
+                ]}
                 onPress={() => setmodalFinalizarViagem(false)}
+                disabled={isLoading}
               >
-                <Text style={styles.modalButtonText} disabled={isLoading}>
-                  Cancelar
-                </Text>
+                <Text style={styles.modalButtonText}>Cancelar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -432,5 +436,9 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  disabledButton: {
+    opacity: 0.6,
+    backgroundColor: "#6c757d"
   },
 });
