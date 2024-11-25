@@ -149,6 +149,7 @@ export default function MeusGastos({ navigation }) {
       )}
       <TouchableOpacity
         style={styles.botao}
+        onPress={() => navigation.navigate("CadastroDespesa", { viagem })}
       >
         <Text style={styles.textobotao}>+ Adicionar Despesa</Text>
       </TouchableOpacity>
