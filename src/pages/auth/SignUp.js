@@ -265,6 +265,5 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
-    backgroundColor: "#6c757d"
   },
 });

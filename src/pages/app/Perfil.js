@@ -308,7 +308,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   modalButtonCancel: {
-    backgroundColor: "#6c757d",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
