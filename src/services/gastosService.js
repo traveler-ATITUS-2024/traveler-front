@@ -30,3 +30,38 @@ export const buscarDespesasDaCategoria = async (viagemId, token) => {
     return false;
   }
 }
+
+export const adicionarDespesa = async (
+  viagemId,
+  categoriaSelecionada,
+  nomeGasto,
+  dataGasto,
+  valorDespesa,
+  token
+) => {
+  try {
+    const response = await api.post("/despesas", 
+      {
+        categoriaId: categoriaSelecionada,
+        viagemId: viagemId,
+        nome: nomeGasto,
+        descricao: "",
+        data: dataGasto,
+        valor: valorDespesa,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response) {
+      Alert.alert("Sucesso!", "Despesa cadastrada com sucesso.");
+    }
+    
+    return response?.data;
+  } catch (error) {
+    console.error(error);
+  }
+}

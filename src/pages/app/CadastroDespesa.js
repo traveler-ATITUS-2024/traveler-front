@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import CurrencyInput from "react-native-currency-input";
@@ -20,6 +21,8 @@ import dayjs from "dayjs";
 import RNPickerSelect from "react-native-picker-select";
 import Icon from "react-native-vector-icons/Ionicons";
 import utc from "dayjs/plugin/utc";
+import { adicionarDespesa } from "../../services/gastosService";
+import { useRoute } from "@react-navigation/native";
 
 dayjs.extend(utc);
 
@@ -34,7 +37,9 @@ const categorias = [
   { id: 8, nome: "Outros" },
 ];
 
-export default function CadastroDespesa({ navigation, route }) {
+export default function CadastroDespesa({ navigation }) {
+  const route = useRoute();
+  const { viagem } = route.params;
   const { token } = useAuth();
   const [calendarioVisivel, setCalendarioVisivel] = useState(false);
   const [relogioVisivel, setRelogioVisivel] = useState(false);
@@ -47,6 +52,7 @@ export default function CadastroDespesa({ navigation, route }) {
   const [valorDespesa, setValorDespesa] = useState(0);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [nomeGasto, setNomeGasto] = useState("");
 
   const onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime
@@ -54,6 +60,26 @@ export default function CadastroDespesa({ navigation, route }) {
       : horaGasto;
     setRelogioVisivel(false);
     setHoraGasto(currentTime);
+  };
+
+  const adicionarNovaDespesa = async () => {
+    try {
+      setIsLoading(true);
+      const response = await adicionarDespesa(
+        viagem.id,
+        categoriaSelecionada,
+        nomeGasto,
+        dataGasto,
+        valorDespesa,
+        token
+      );
+
+      if (response) {
+        navigation.navigate("MeusGastos", { viagem });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -151,7 +177,7 @@ export default function CadastroDespesa({ navigation, route }) {
             onPress={() => {}}
           >
             <DateTimePicker
-              value={horaGasto}
+              value={new Date()}
               mode="time"
               is24Hour={true}
               display="clock"
@@ -163,8 +189,10 @@ export default function CadastroDespesa({ navigation, route }) {
 
       <View style={styles.tituloContainer}>
         <TextInput
+          value={nomeGasto}
+          onChangeText={setNomeGasto}
           style={styles.tituloInput}
-          placeholder="Título do gasto:"
+          placeholder="Nome do gasto:"
           placeholderTextColor="#888"
         />
       </View>
@@ -196,7 +224,9 @@ export default function CadastroDespesa({ navigation, route }) {
       </View>
 
       <TouchableOpacity
-        style={styles.botaoAdicionar}
+        style={isLoading ? styles.botaoAdicionarDisable : styles.botaoAdicionar}
+        onPress={adicionarNovaDespesa}
+        disabled={isLoading}
       >
         {isLoading ? (
             <ActivityIndicator color="#fff" />
@@ -241,7 +271,7 @@ const styles = StyleSheet.create({
   tituloInput: {
     borderBottomWidth: 2,
     borderBottomColor: "#888",
-    color: "#888",
+    color: "#FFF",
     fontSize: 20,
     paddingVertical: 10,
   },
@@ -351,6 +381,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
     top: '90%',
+  },
+  botaoAdicionarDisable: {
+    backgroundColor: "#0E6EFF",
+    borderRadius: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    top: '90%',
+    opacity: 0.6,
   },
   textoBotao: {
     color: "#FFFFFF",
