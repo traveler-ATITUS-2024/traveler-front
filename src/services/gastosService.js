@@ -11,7 +11,7 @@ export const buscarDespesas = async (viagemId, token) => {
 
     return response?.data;
   } catch (error) {
-    Alert.alert("Erro", "Ocorreu um erro ao buscar as viagens.");
+    Alert.alert("Erro", "Ocorreu um erro ao buscar as despesas.");
     return false;
   }
 };
@@ -28,6 +28,29 @@ export const buscarDespesasDaCategoria = async (viagemId, token) => {
   } catch (error) {
     Alert.alert("Erro", "Ocorreu um erro ao buscar as despesas.");
     return false;
+  }
+}
+
+export const deletarDespesa = async (
+  despesaId,
+  token
+) => {
+  try {
+    const response = await api.delete(`/despesas/${despesaId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response) {
+      Alert.alert("Sucesso!", "Despesa excluída com sucesso.");
+    }
+    
+    return true
+  } catch (error) {
+    console.error(error);
   }
 }
 

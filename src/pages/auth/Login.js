@@ -133,12 +133,12 @@ export default function Login({ navigation }) {
               <Text style={styles.textobotao}>Entrar</Text>
             </TouchableOpacity>
           )}
+          <Text style={styles.texto}>Ainda não possui uma conta?</Text>
           <TouchableOpacity
             style={[styles.acessoLogin, isLoading && styles.disabledButton]}
             onPress={() => navigation.navigate("SignUp")}
             disabled={isLoading}
           >
-            <Text style={styles.texto}>Ainda não possui uma conta?</Text>
             <Text style={styles.login}>Cadastre-se agora!</Text>
             <View style={styles.linha}></View>
           </TouchableOpacity>
