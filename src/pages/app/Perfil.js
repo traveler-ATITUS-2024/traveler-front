@@ -41,15 +41,15 @@ export default function Perfil({ navigation }) {
 
   const sairDaConta = async () => {
     try {
-      setIsLoading(true)
-      const response = await logout(); 
+      setIsLoading(true);
+      const response = await logout();
 
       if (response) {
         setUser(null);
         setToken(null);
-  
+
         await AsyncStorage.clear();
-  
+
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -57,11 +57,10 @@ export default function Perfil({ navigation }) {
           })
         );
       }
-
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -165,7 +164,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#00050D",
-    paddingHorizontal: 20,
+    paddingHorizontal: 8,
     paddingTop: 50,
     alignItems: "center",
   },
@@ -187,6 +186,7 @@ const styles = StyleSheet.create({
   infousuario: {
     width: "100%",
     paddingHorizontal: 20,
+    marginTop: 20,
     marginBottom: 30,
   },
   nomeContainer: {
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#061730",
     paddingVertical: 15,
     borderRadius: 33,
-    width: 150,
+    width: 160,
     alignItems: "center",
   },
   textobotao: {
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 10,
-    top: 220
+    top: 220,
   },
   textoBotaoSair: {
     color: "#FFF",

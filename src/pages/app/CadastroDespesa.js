@@ -8,10 +8,14 @@ import {
   Text,
   Modal,
   ActivityIndicator,
+  Alert,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import CurrencyInput from "react-native-currency-input";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";
 import flechaesquerda from "../../../assets/flechaesquerda.png";
@@ -54,22 +58,21 @@ export default function CadastroDespesa({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [nomeGasto, setNomeGasto] = useState("");
 
-  const onChangeTime = (event, selectedTime) => {
-    const currentTime = selectedTime
-      ? dayjs(selectedTime).utcOffset(-3).toDate()
-      : horaGasto;
-    setRelogioVisivel(false);
-    setHoraGasto(currentTime);
-  };
-
   const adicionarNovaDespesa = async () => {
     try {
       setIsLoading(true);
+
+      if (!dataGasto || !horaGasto || !nomeGasto || !categoriaSelecionada) {
+        Alert.alert("Por favor, preencha todas as informações.");
+        return;
+      }
+
       const response = await adicionarDespesa(
         viagem.id,
         categoriaSelecionada,
         nomeGasto,
         dataGasto,
+        horaGasto,
         valorDespesa,
         token
       );
@@ -79,165 +82,177 @@ export default function CadastroDespesa({ navigation }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.flechaContainer}
-        >
-          <Image
-            source={flechaesquerda}
-            style={[styles.flecha, { tintColor: "#FFFF" }]}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.flechaContainer}
+          >
+            <Image
+              source={flechaesquerda}
+              style={[styles.flecha, { tintColor: "#FFFF" }]}
+            />
+          </TouchableOpacity>
+          <Image source={logo} style={styles.logo} />
+        </View>
+
+        <View style={styles.gastoContainer}>
+          <Text style={styles.gastoLabel}>Valor :</Text>
+          <CurrencyInput
+            style={styles.inputGasto}
+            value={valorDespesa}
+            onChangeValue={setValorDespesa}
+            keyboardType="numeric"
+            prefix="R$ "
           />
-        </TouchableOpacity>
-        <Image source={logo} style={styles.logo} />
-      </View>
+        </View>
+        <View style={styles.divider} />
 
-      <View style={styles.gastoContainer}>
-        <Text style={styles.gastoLabel}>Valor :</Text>
-        <CurrencyInput
-          style={styles.inputGasto}
-          value={valorDespesa}
-          onChangeValue={setValorDespesa}
-          keyboardType="numeric"
-          prefix="R$ "
-        />
-      </View>
-      <View style={styles.divider} />
-
-      <TouchableOpacity
-        onPress={() => setCalendarioVisivel(true)}
-        style={styles.dataContainer}
-      >
-        <Image source={calendario} style={styles.iconecalendario} />
-        <Text style={styles.textoData}>
-          {dataGasto
-            ? dayjs(dataGasto).format("DD/MM/YYYY")
-            : "Data do gasto"}
-        </Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={calendarioVisivel}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setCalendarioVisivel(false)}
-      >
         <TouchableOpacity
-          style={styles.modalOverlay}
-          onPress={() => setCalendarioVisivel(false)}
-          activeOpacity={1}
+          onPress={() => setCalendarioVisivel(true)}
+          style={styles.dataContainer}
+        >
+          <Image source={calendario} style={styles.iconecalendario} />
+          <Text style={styles.textoData}>
+            {dataGasto
+              ? dayjs(dataGasto).format("DD/MM/YYYY")
+              : "Data do gasto"}
+          </Text>
+        </TouchableOpacity>
+
+        <Modal
+          visible={calendarioVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setCalendarioVisivel(false)}
         >
           <TouchableOpacity
-            style={styles.modalContent}
+            style={styles.modalOverlay}
+            onPress={() => setCalendarioVisivel(false)}
             activeOpacity={1}
-            onPress={() => { }}
           >
-            <Calendar
-              style={styles.calendario}
-              theme={styles.temacalendario}
-              minDate={new Date().toDateString()}
-              onDayPress={(day) => {
-                setDataGasto(dayjs(day.dateString).toISOString());
-                setCalendarioVisivel(false);
-              }}
-            />
+            <TouchableOpacity
+              style={styles.modalContent}
+              activeOpacity={1}
+              onPress={() => {}}
+            >
+              <Calendar
+                style={styles.calendario}
+                theme={styles.temacalendario}
+                minDate={new Date().toDateString()}
+                onDayPress={(day) => {
+                  setDataGasto(dayjs(day.dateString).toISOString());
+                  setCalendarioVisivel(false);
+                }}
+              />
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        </Modal>
 
-      <TouchableOpacity
-        onPress={() => setRelogioVisivel(true)}
-        style={styles.horaContainer}
-      >
-        <Image source={relogio} style={styles.iconerelogio} />
-        <Text style={styles.textoHora}>
-          {horaGasto ? dayjs(horaGasto).format("HH:mm") : "Horário do gasto"}
-        </Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={relogioVisivel}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setRelogioVisivel(false)}
-      >
         <TouchableOpacity
-          style={styles.modalOverlay}
-          onPress={() => setRelogioVisivel(false)}
-          activeOpacity={1}
+          onPress={() => setRelogioVisivel(true)}
+          style={styles.horaContainer}
         >
-          <TouchableOpacity
-            style={styles.modalContent}
-            activeOpacity={1}
-            onPress={() => { }}
-          >
-            <DateTimePicker
-              value={new Date()}
-              mode="time"
-              is24Hour={true}
-              display="default"
-              onChange={onChangeTime}
-            />
-          </TouchableOpacity>
+          <Image source={relogio} style={styles.iconerelogio} />
+          <Text style={styles.textoHora}>
+            {horaGasto ? dayjs(horaGasto).format("HH:mm") : "Horário do gasto"}
+          </Text>
         </TouchableOpacity>
-      </Modal>
 
-      <View style={styles.tituloContainer}>
-        <TextInput
-          value={nomeGasto}
-          onChangeText={setNomeGasto}
-          style={styles.tituloInput}
-          placeholder="Nome do gasto:"
-          placeholderTextColor="#888"
-        />
-      </View>
+        <Modal
+          visible={relogioVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setRelogioVisivel(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              {Platform.OS === "ios" && (
+                <DateTimePicker
+                  value={horaGasto ? new Date(horaGasto) : new Date()}
+                  mode="time"
+                  is24Hour={true}
+                  display="spinner"
+                  onChange={(event, selectedTime) => {
+                    if (selectedTime) {
+                      setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
+                    }
+                  }}
+                />
+              )}
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => setRelogioVisivel(false)}
+              >
+                <Text style={styles.confirmButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
-      <View style={styles.dividerNome} />
+        <View style={styles.tituloContainer}>
+          <TextInput
+            value={nomeGasto}
+            onChangeText={setNomeGasto}
+            style={styles.tituloInput}
+            placeholder="Nome do gasto:"
+            placeholderTextColor="#888"
+          />
+        </View>
 
-      <View style={styles.categoriaContainer}>
-        <RNPickerSelect
-          onValueChange={(value) => setCategoriaSelecionada(value)}
-          items={categorias.map((item) => ({
-            label: item.nome,
-            value: item.id,
-          }))}
-          placeholder={{
-            label: "Selecione uma categoria",
-            value: null,
-            color: "#888",
-          }}
-          style={{
-            inputIOS: styles.picker,
-            inputAndroid: styles.picker,
-            iconContainer: styles.iconContainer,
-            placeholder: { color: "#FFF" },
-          }}
-          Icon={() => (
-            <Icon name="chevron-down" size={20} color="#FFF"
-              style={{ marginHorizontal: 16, }}
-            />
+        <View style={styles.dividerNome} />
+
+        <View style={styles.categoriaContainer}>
+          <RNPickerSelect
+            onValueChange={(value) => setCategoriaSelecionada(value)}
+            items={categorias.map((item) => ({
+              label: item.nome,
+              value: item.id,
+            }))}
+            placeholder={{
+              label: "Selecione uma categoria",
+              value: null,
+              color: "black",
+            }}
+            style={{
+              inputIOS: styles.picker,
+              inputAndroid: styles.picker,
+              iconContainer: styles.iconContainer,
+              placeholder: { color: "#FFF" },
+            }}
+            Icon={() => (
+              <Icon
+                name="chevron-down"
+                size={20}
+                color="#FFF"
+                style={{ marginHorizontal: 16 }}
+              />
+            )}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={
+            isLoading ? styles.botaoAdicionarDisable : styles.botaoAdicionar
+          }
+          onPress={adicionarNovaDespesa}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.textoBotao}>+ Adicionar</Text>
           )}
-        />
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        style={isLoading ? styles.botaoAdicionarDisable : styles.botaoAdicionar}
-        onPress={adicionarNovaDespesa}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.textoBotao}>+ Adicionar</Text>
-        )}
-      </TouchableOpacity>
-
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -299,7 +314,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 22,
     fontWeight: "bold",
-    marginLeft: '2%',
+    marginLeft: "2%",
   },
   inputGasto: {
     color: "#999",
@@ -307,14 +322,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
     textAlign: "right",
-    marginRight: '2%',
+    marginRight: "2%",
   },
   dataContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 30,
     marginHorizontal: 16,
-    height: 50, 
+    height: 50,
   },
   modalOverlay: {
     flex: 1,
@@ -323,11 +338,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    width: 300,
-    height: 300,
-    borderRadius: 8,
-    padding: 10,
+    backgroundColor: "#00050D",
+    borderRadius: 10,
+    padding: 16,
+    width: "80%",
     alignItems: "center",
+  },
+  confirmButton: {
+    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   calendario: {
     width: 300,
@@ -348,21 +376,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   iconecalendario: {
-    width: 32, 
+    width: 32,
     height: 32,
-    marginRight: 10, 
+    marginRight: 10,
   },
   iconerelogio: {
-    width: 32, 
+    width: 32,
     height: 32,
-    marginRight: 10, 
+    marginRight: 10,
   },
   horaContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
     marginHorizontal: 16,
-    height: 50, 
+    height: 50,
   },
   textoHora: {
     color: "#fff",
@@ -374,7 +402,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 40,
     backgroundColor: "#071222",
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   iconContainer: {
     top: 14,
@@ -382,10 +410,10 @@ const styles = StyleSheet.create({
   picker: {
     color: "#FFF",
     marginLeft: 6,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingVertical: 12,
     paddingLeft: 16,
-    fontSize: 16
+    fontSize: 16,
   },
   botaoAdicionar: {
     backgroundColor: "#0E6EFF",
@@ -395,7 +423,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 20,
-    top: '88%',
+    top: "88%",
   },
   botaoAdicionarDisable: {
     backgroundColor: "#0E6EFF",
@@ -405,7 +433,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 20,
-    top: '88%',
+    top: "88%",
     opacity: 0.6,
   },
   textoBotao: {
