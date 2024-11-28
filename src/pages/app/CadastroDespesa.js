@@ -167,35 +167,44 @@ export default function CadastroDespesa({ navigation }) {
         </TouchableOpacity>
 
         <Modal
-          visible={relogioVisivel}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setRelogioVisivel(false)}
+        visible={relogioVisivel}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setRelogioVisivel(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          onPress={() => setRelogioVisivel(false)}
+          activeOpacity={1}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              {Platform.OS === "ios" && (
-                <DateTimePicker
-                  value={horaGasto ? new Date(horaGasto) : new Date()}
-                  mode="time"
-                  is24Hour={true}
-                  display="spinner"
-                  onChange={(event, selectedTime) => {
-                    if (selectedTime) {
-                      setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
-                    }
-                  }}
-                />
-              )}
+          <TouchableOpacity
+            style={styles.modalContent}
+            activeOpacity={1}
+            onPress={() => { }}
+          >
+            <DateTimePicker
+              value={new Date()}
+              mode="time"
+              is24Hour={true}
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(event, selectedTime) => {
+                if (selectedTime) {
+                  setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
+                  setRelogioVisivel(false);
+                }
+              }}
+            />
+            {Platform.OS === "ios" && (
               <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={() => setRelogioVisivel(false)}
-              >
-                <Text style={styles.confirmButtonText}>Confirmar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+              style={styles.confirmButton}
+              onPress={() => setRelogioVisivel(false)}
+            >
+              <Text style={styles.confirmButtonText}>Confirmar</Text>
+            </TouchableOpacity>
+            )}
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
 
         <View style={styles.tituloContainer}>
           <TextInput
