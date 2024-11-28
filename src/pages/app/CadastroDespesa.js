@@ -190,7 +190,7 @@ export default function CadastroDespesa({ navigation }) {
               onChange={(event, selectedTime) => {
                 if (selectedTime) {
                   setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
-                  setRelogioVisivel(false);
+                  {Platform.OS != "ios" && setRelogioVisivel(false)}
                 }
               }}
             />
