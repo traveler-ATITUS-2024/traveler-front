@@ -183,7 +183,7 @@ export default function CadastroDespesa({ navigation }) {
             onPress={() => { }}
           >
             <DateTimePicker
-              value={new Date()}
+              value={horaGasto ? new Date(horaGasto) : new Date()}
               mode="time"
               is24Hour={true}
               display={Platform.OS === "ios" ? "spinner" : "default"}
@@ -195,7 +195,7 @@ export default function CadastroDespesa({ navigation }) {
               }}
             />
             {Platform.OS === "ios" && (
-              <TouchableOpacity
+            <TouchableOpacity
               style={styles.confirmButton}
               onPress={() => setRelogioVisivel(false)}
             >
