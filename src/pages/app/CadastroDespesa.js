@@ -22,23 +22,22 @@ import flechaesquerda from "../../../assets/flechaesquerda.png";
 import calendario from "../../../assets/calendario.png";
 import relogio from "../../../assets/relogio.png";
 import dayjs from "dayjs";
-import RNPickerSelect from "react-native-picker-select";
-import Icon from "react-native-vector-icons/Ionicons";
 import utc from "dayjs/plugin/utc";
 import { adicionarDespesa } from "../../services/gastosService";
 import { useRoute } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import RNPickerSelect from "react-native-picker-select";
 
 dayjs.extend(utc);
-
 const categorias = [
-  { id: 1, nome: "Alimentação" },
-  { id: 2, nome: "Hospedagem" },
-  { id: 3, nome: "Transporte" },
-  { id: 4, nome: "Compras" },
-  { id: 5, nome: "Ingressos" },
-  { id: 6, nome: "Seguro e Documentação" },
-  { id: 7, nome: "Saúde e bem-estar" },
-  { id: 8, nome: "Outros" },
+  { label: "Alimentação", value: 1 },
+  { label: "Hospedagem", value: 2 },
+  { label: "Transporte", value: 3 },
+  { label: "Compras", value: 4 },
+  { label: "Ingressos", value: 5 },
+  { label: "Seguro e Documentação", value: 6 },
+  { label: "Saúde e bem-estar", value: 7 },
+  { label: "Outros", value: 8 },
 ];
 
 export default function CadastroDespesa({ navigation }) {
@@ -54,9 +53,10 @@ export default function CadastroDespesa({ navigation }) {
     return dataFuso.toISOString();
   });
   const [valorDespesa, setValorDespesa] = useState(0);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [nomeGasto, setNomeGasto] = useState("");
+  const [categoriaModalVisivel, setCategoriaModalVisivel] = useState(false);
 
   const adicionarNovaDespesa = async () => {
     try {
@@ -167,44 +167,46 @@ export default function CadastroDespesa({ navigation }) {
         </TouchableOpacity>
 
         <Modal
-        visible={relogioVisivel}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setRelogioVisivel(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          onPress={() => setRelogioVisivel(false)}
-          activeOpacity={1}
+          visible={relogioVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setRelogioVisivel(false)}
         >
           <TouchableOpacity
-            style={styles.modalContent}
+            style={styles.modalOverlay}
+            onPress={() => setRelogioVisivel(false)}
             activeOpacity={1}
-            onPress={() => { }}
           >
-            <DateTimePicker
-              value={horaGasto ? new Date(horaGasto) : new Date()}
-              mode="time"
-              is24Hour={true}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={(event, selectedTime) => {
-                if (selectedTime) {
-                  setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
-                  {Platform.OS != "ios" && setRelogioVisivel(false)}
-                }
-              }}
-            />
-            {Platform.OS === "ios" && (
             <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={() => setRelogioVisivel(false)}
+              style={styles.modalContent}
+              activeOpacity={1}
+              onPress={() => {}}
             >
-              <Text style={styles.confirmButtonText}>Confirmar</Text>
+              <DateTimePicker
+                value={horaGasto ? new Date(horaGasto) : new Date()}
+                mode="time"
+                is24Hour={true}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={(event, selectedTime) => {
+                  if (selectedTime) {
+                    setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
+                    {
+                      Platform.OS != "ios" && setRelogioVisivel(false);
+                    }
+                  }
+                }}
+              />
+              {Platform.OS === "ios" && (
+                <TouchableOpacity
+                  style={styles.confirmButton}
+                  onPress={() => setRelogioVisivel(false)}
+                >
+                  <Text style={styles.confirmButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+              )}
             </TouchableOpacity>
-            )}
           </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        </Modal>
 
         <View style={styles.tituloContainer}>
           <TextInput
@@ -218,34 +220,55 @@ export default function CadastroDespesa({ navigation }) {
 
         <View style={styles.dividerNome} />
 
-        <View style={styles.categoriaContainer}>
-          <RNPickerSelect
-            onValueChange={(value) => setCategoriaSelecionada(value)}
-            items={categorias.map((item) => ({
-              label: item.nome,
-              value: item.id,
-            }))}
-            placeholder={{
-              label: "Selecione uma categoria",
-              value: null,
-              color: "black",
-            }}
-            style={{
-              inputIOS: styles.picker,
-              inputAndroid: styles.picker,
-              iconContainer: styles.iconContainer,
-              placeholder: { color: "#FFF" },
-            }}
-            Icon={() => (
-              <Icon
-                name="chevron-down"
-                size={20}
-                color="#FFF"
-                style={{ marginHorizontal: 16 }}
-              />
-            )}
+        <TouchableOpacity
+          onPress={() => setCategoriaModalVisivel(true)}
+          style={styles.categoriaContainer}
+        >
+          <Text style={styles.textoCategoria}>
+            {categoriaSelecionada
+              ? categorias.find(
+                  (categoria) => categoria.value === categoriaSelecionada
+                )?.label
+              : "Selecione a Categoria"}
+          </Text>
+
+          <MaterialIcons
+            name="arrow-drop-down" // Nome do ícone de seta para baixo
+            size={28} // Tamanho do ícone
+            color="#fff" // Cor do ícone
+            style={styles.icon}
           />
-        </View>
+        </TouchableOpacity>
+
+        <Modal
+          visible={categoriaModalVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setCategoriaModalVisivel(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            onPress={() => setCategoriaModalVisivel(false)}
+            activeOpacity={1}
+          >
+            <View style={styles.modalContentCategoria}>
+              {categorias.map((categoria) => (
+                <TouchableOpacity
+                  key={categoria.value}
+                  onPress={() => {
+                    setCategoriaSelecionada(categoria.value);
+                    setCategoriaModalVisivel(false);
+                  }}
+                  style={styles.categoriaOption}
+                >
+                  <Text style={styles.textoCategoriaOption}>
+                    {categoria.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
 
         <TouchableOpacity
           style={
@@ -353,6 +376,34 @@ const styles = StyleSheet.create({
     width: "80%",
     alignItems: "center",
   },
+  modalContentCategoria: {
+    backgroundColor: "#00050D",
+    width: "85%",
+    borderRadius: 15,
+    padding: 20,
+    maxHeight: "80%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  categoriaOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  textoCategoriaOption: {
+    fontSize: 18,
+    color: "#fff",
+  },
+  textoCategoria: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginLeft: 20,
+  },
   confirmButton: {
     marginTop: 16,
     paddingVertical: 12,
@@ -406,6 +457,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   categoriaContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 16,
     marginTop: 20,
     height: 50,
@@ -423,6 +476,34 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingLeft: 16,
     fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  pickerInput: {
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 20,
+  },
+  selectedText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#555",
+  },
+  iconContainer: {
+    top: 10,
+    right: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
   botaoAdicionar: {
     backgroundColor: "#0E6EFF",
