@@ -1,6 +1,6 @@
 import logo from "../../../assets/logo.png";
 
-import React, { useState } from "react";
+import React, { useState, version } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,10 @@ import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../../context/AuthContext";
-import { buscarDespesas, buscarDespesasDaCategoria } from "../../services/gastosService";
+import {
+  buscarDespesas,
+  buscarDespesasDaCategoria,
+} from "../../services/gastosService";
 
 export default function MeusGastos({ navigation }) {
   const route = useRoute();
@@ -23,7 +26,7 @@ export default function MeusGastos({ navigation }) {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [despesas, setDespesas] = useState([]);
-  const [despesaDaCategoria, setDespesaDaCategoria] = useState([])
+  const [despesaDaCategoria, setDespesaDaCategoria] = useState([]);
 
   const totalDespesas = despesaDaCategoria.reduce(
     (acc, categoria) => acc + categoria.totalDespesas,
@@ -38,35 +41,33 @@ export default function MeusGastos({ navigation }) {
     5: "ticket",
     6: "security",
     7: "hospital",
-    8: "more"
+    8: "more",
   };
-
 
   useFocusEffect(
     React.useCallback(() => {
-      buscarDespesaPorCategoria()
-      buscaMinhasDespesas()
+      buscarDespesaPorCategoria();
+      buscaMinhasDespesas();
     }, [])
   );
 
   const buscarDespesaPorCategoria = async () => {
     try {
       setLoading(true);
-      const response = await buscarDespesasDaCategoria(viagem.id, token)
+      const response = await buscarDespesasDaCategoria(viagem.id, token);
 
       if (response) {
-        setDespesaDaCategoria(response)
+        setDespesaDaCategoria(response);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const buscaMinhasDespesas = async () => {
     try {
       setLoading(true);
       const response = await buscarDespesas(viagem.id, token);
-
 
       if (response) {
         setDespesas(response);
@@ -124,10 +125,25 @@ export default function MeusGastos({ navigation }) {
         </View>
       ) : (
         <ScrollView style={styles.scrollContainer}>
+          <TouchableOpacity
+            style={styles.botaoTodasDespesas}
+            onPress={() =>
+              navigation.navigate("TodasDespesas", { despesas, viagem })
+            }
+          >
+            <Text style={styles.botaoTodasDespesasTexto}>Ver todas</Text>
+          </TouchableOpacity>
           <View style={styles.actionContainer}>
             {despesaDaCategoria.map((categoria, index) => (
-              <TouchableOpacity key={index} style={styles.button}
-                onPress={() => navigation.navigate("DespesaPorCategoria", { categoria, viagem })}
+              <TouchableOpacity
+                key={index}
+                style={styles.button}
+                onPress={() =>
+                  navigation.navigate("DespesaPorCategoria", {
+                    categoria,
+                    viagem,
+                  })
+                }
               >
                 <View style={styles.textContainer}>
                   <MaterialCommunityIcons
@@ -136,7 +152,9 @@ export default function MeusGastos({ navigation }) {
                     color="#FFF"
                   />
                   <Text style={styles.buttonText}>
-                    {categoria.nome.length > 18 ? `${categoria.nome.substring(0, 18)}...` : categoria.nome}
+                    {categoria.nome.length > 18
+                      ? `${categoria.nome.substring(0, 18)}...`
+                      : categoria.nome}
                   </Text>
                 </View>
                 <Text style={styles.valueText}>
@@ -249,9 +267,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 20,
-    flexDirection: "row", 
+    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", 
+    alignItems: "center",
   },
   valueText: {
     fontSize: 16,
@@ -259,7 +277,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   textContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
   },
   row: {
@@ -270,7 +288,19 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFF",
     fontSize: 16,
-    marginLeft: 10, 
+    marginLeft: 10,
+  },
+  botaoTodasDespesas: {
+    color: "#FFF",
+    fontSize: 18,
+    width: "30%",
+    borderBottomColor: "#fff",
+    borderBottomWidth: 1,
+    alignItems: "center",
+  },
+  botaoTodasDespesasTexto: {
+    color: "#FFF",
+    fontSize: 18,
   },
   botao: {
     backgroundColor: "#0E6EFF",
@@ -286,6 +316,6 @@ const styles = StyleSheet.create({
   textobotao: {
     color: "#FFF",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

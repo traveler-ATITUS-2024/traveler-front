@@ -67,7 +67,6 @@ export const adicionarDespesa = async (
       .utc()
       .subtract(3, "hours")
       .toISOString();
-    console.log(dataHoraConcatenada);
 
     const response = await api.post(
       "/despesas",

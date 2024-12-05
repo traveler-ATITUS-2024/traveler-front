@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import logo from "../../../assets/logo.png";
+
+import React, { useState, version } from "react";
 import {
   View,
   Text,
@@ -11,31 +13,22 @@ import {
 } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useAuth } from "../../context/AuthContext";
-import { buscarDespesas } from "../../services/gastosService";
 import lixeira from "../../../assets/lixeiraexcluir.png";
 import dayjs from "dayjs";
+import { useAuth } from "../../context/AuthContext";
 import { deletarDespesa } from "../../services/gastosService";
+import { buscarDespesas } from "../../services/gastosService";
 
-export default function DespesaPorCategoria({ navigation }) {
+export default function MeusGastos({ navigation }) {
   const route = useRoute();
-  const { categoria } = route.params;
+  const { despesas } = route.params;
   const { viagem } = route.params;
+
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [despesasDaCategoria, setDespesaDaCategoria] = useState([]);
-  const despesaFiltrada = despesasDaCategoria.filter(
-    (despesasDaCategoria) =>
-      despesasDaCategoria.categoriaId === categoria.categoriaId
-  );
   const [modalExcluirDespesa, setModalExcluirDespesa] = useState(false);
   const [despesaSelecionadaId, setDespesaSelecionadaId] = useState(null);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      buscaMinhasDespesas();
-    }, [])
-  );
+  const [listaDespesas, setListaDespesas] = useState([]);
 
   const buscaMinhasDespesas = async () => {
     try {
@@ -43,7 +36,7 @@ export default function DespesaPorCategoria({ navigation }) {
       const response = await buscarDespesas(viagem.id, token);
 
       if (response) {
-        setDespesaDaCategoria(response);
+        setListaDespesas(response);
       }
     } catch (error) {
       console.error(error);
@@ -71,6 +64,23 @@ export default function DespesaPorCategoria({ navigation }) {
     }
   };
 
+  const icones = {
+    1: "silverware-fork-knife",
+    2: "bed",
+    3: "car",
+    4: "shopping",
+    5: "ticket",
+    6: "security",
+    7: "hospital",
+    8: "more",
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      buscaMinhasDespesas();
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -80,9 +90,10 @@ export default function DespesaPorCategoria({ navigation }) {
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-
-        <Text style={styles.titulo}>{categoria.nome}</Text>
+        <Text style={styles.titulo}>Todos os Gastos</Text>
       </View>
+
+      <View style={styles.divider} />
 
       {isLoading ? (
         <View style={styles.loading}>
@@ -90,7 +101,7 @@ export default function DespesaPorCategoria({ navigation }) {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.despesacontainer}>
-          {despesaFiltrada.map((despesa) => (
+          {listaDespesas.map((despesa) => (
             <View key={despesa.id} style={styles.despesacard}>
               <View style={styles.suo}>
                 <Text style={styles.nomedespesa}>{despesa.nome}</Text>
