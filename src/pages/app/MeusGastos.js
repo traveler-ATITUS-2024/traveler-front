@@ -44,6 +44,17 @@ export default function MeusGastos({ navigation }) {
     8: "more",
   };
 
+  const cores = {
+    1: "#FFA500",
+    2: "#FF0000",
+    3: "#0000FF",
+    4: "#008000",
+    5: "#800080",
+    6: "#808080",
+    7: "#FF0000",
+    8: "#FFD700",
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       buscarDespesaPorCategoria();
@@ -99,19 +110,26 @@ export default function MeusGastos({ navigation }) {
         <View style={styles.statusRow}>
           <Text style={styles.meusGastos}>Meus Gastos:</Text>
           <View style={styles.valueContainer}>
-            <Text style={styles.moneyTextGray}>
+            <Text
+              style={
+                totalDespesas <= viagem.valorPrv
+                  ? styles.moneyText
+                  : styles.moneyTextRed
+              }
+            >
+              {" "}
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-                maximumFractionDigits: 0,
-              }).format(viagem.valorPrv)}{" "}
+              }).format(totalDespesas)}
             </Text>
-            <Text style={styles.moneyText}>
+            <Text style={styles.moneyTextGray}>
               /{" "}
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(totalDespesas)}{" "}
+                maximumFractionDigits: 0,
+              }).format(viagem.valorPrv)}
             </Text>
           </View>
         </View>
@@ -150,7 +168,7 @@ export default function MeusGastos({ navigation }) {
                     <MaterialCommunityIcons
                       name={icones[categoria.categoriaId] || "folder"}
                       size={25}
-                      color="#FFF"
+                      color={cores[categoria.categoriaId] || "#FFF"}
                     />
                     <Text style={styles.buttonText}>
                       {categoria.nome.length > 18
@@ -212,7 +230,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     textAlign: "center",
     flex: 1,
-    marginTop: 20,
+    marginTop: 10,
   },
   meusGastos: {
     fontSize: 20,
@@ -245,7 +263,13 @@ const styles = StyleSheet.create({
   },
   moneyText: {
     color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  moneyTextRed: {
+    color: "#9B111E",
     fontSize: 16,
+    fontWeight: "bold",
   },
 
   loading: {

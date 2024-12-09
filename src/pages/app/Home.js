@@ -99,19 +99,26 @@ export default function Viagem({ navigation }) {
                 </View>
                 <View style={styles.detailsRow}>
                   <Ionicons name="wallet-outline" size={20} color="#80F04E" />
-                  <Text style={styles.moneyTextGray}>
+                  <Text
+                    style={
+                      viagem.valorReal <= viagem.valorPrv
+                        ? styles.moneyText
+                        : styles.moneyTextRed
+                    }
+                  >
+                    {" "}
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
-                      maximumFractionDigits: 0,
-                    }).format(viagem.valorPrv)}{" "}
+                    }).format(viagem.valorReal)}
                   </Text>
-                  <Text style={styles.moneyText}>
+                  <Text style={styles.moneyTextGray}>
                     /{" "}
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
-                    }).format(viagem.valorReal)}{" "}
+                      maximumFractionDigits: 0,
+                    }).format(viagem.valorPrv)}
                   </Text>
                   <View style={{ flex: 1 }} />
                   <Ionicons
@@ -282,6 +289,10 @@ const styles = StyleSheet.create({
   },
   moneyText: {
     color: "white",
+    fontSize: 15,
+  },
+  moneyTextRed: {
+    color: "#9B111E",
     fontSize: 15,
   },
   loading: {

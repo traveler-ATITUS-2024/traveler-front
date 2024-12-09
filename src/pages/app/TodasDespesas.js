@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { useAuth } from "../../context/AuthContext";
 import { deletarDespesa } from "../../services/gastosService";
 import { buscarDespesas } from "../../services/gastosService";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function MeusGastos({ navigation }) {
   const route = useRoute();
@@ -75,6 +76,17 @@ export default function MeusGastos({ navigation }) {
     8: "more",
   };
 
+  const cores = {
+    1: "#FFA500",
+    2: "#ADD8E6",
+    3: "#0000FF",
+    4: "#008000",
+    5: "#800080",
+    6: "#808080",
+    7: "#FF0000",
+    8: "#FFD700",
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       buscaMinhasDespesas();
@@ -103,22 +115,34 @@ export default function MeusGastos({ navigation }) {
         <ScrollView contentContainerStyle={styles.despesacontainer}>
           {listaDespesas.map((despesa) => (
             <View key={despesa.id} style={styles.despesacard}>
-              <View style={styles.suo}>
-                <Text style={styles.nomedespesa}>{despesa.nome}</Text>
+              <MaterialCommunityIcons
+                name={icones[despesa.categoriaId] || "folder"}
+                size={32}
+                color={cores[despesa.categoriaId] || "#FFF"}
+              />
+              <View style={styles.infoContainer}>
+                <Text style={styles.nomedespesa}>
+                  {despesa.nome.length > 20
+                    ? `${despesa.nome.substring(0, 20)}...`
+                    : despesa.nome}
+                </Text>
                 <Text style={styles.datadespesa}>
                   {despesa.data
-                    ? `${dayjs(despesa.data)
+                    ? dayjs(despesa.data)
                         .add(3, "hours")
-                        .format("DD - MMM - ")}${dayjs(despesa.data)
-                        .add(3, "hours")
-                        .format("HH:mm")}`
+                        .format("DD/MM - HH:mm")
                     : ""}
                 </Text>
               </View>
               <View style={styles.valordespesacontainer}>
-                <Text style={styles.valordespesa}>R$ {despesa.valor}</Text>
-                <View style={styles.separador}></View>
-                <TouchableOpacity
+                <Text style={styles.valordespesa}>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                    maximumFractionDigits: 2,
+                  }).format(despesa.valor)}
+                </Text>
+                {/* <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => {
                     setDespesaSelecionadaId(despesa.id);
@@ -130,7 +154,7 @@ export default function MeusGastos({ navigation }) {
                   ) : (
                     <Image source={lixeira} style={{ tintColor: "#FF3B30" }} />
                   )}
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
           ))}
@@ -190,7 +214,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#00050D",
-    paddingHorizontal: 25,
+    paddingHorizontal: 10,
   },
   header: {
     flexDirection: "row",
@@ -222,41 +246,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   despesacard: {
-    width: "100%",
-    backgroundColor: "#071222",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginBottom: 20,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 5,
+    borderRadius: 15,
+    padding: 15,
+    marginVertical: 10,
+    width: "100%",
+    borderBottomWidth: 3,
+  },
+  infoContainer: {
+    flex: 1,
+    marginHorizontal: 10,
   },
   nomedespesa: {
     color: "#ffffff",
     fontSize: 16,
-    fontWeight: "bold",
   },
   datadespesa: {
-    color: "#a9a9a9",
+    color: "#696969",
     fontSize: 14,
+    marginTop: 3,
   },
   valordespesacontainer: {
     flexDirection: "row",
-    width: "40%",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginEnd: 10,
   },
   valordespesa: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
+    marginRight: 10,
   },
-  separador: {
-    width: 2,
-    backgroundColor: "#888",
-    height: 30,
+  deleteButton: {
+    padding: 5,
   },
   loading: {
     flex: 1,
