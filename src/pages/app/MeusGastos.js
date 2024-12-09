@@ -124,50 +124,53 @@ export default function MeusGastos({ navigation }) {
           <ActivityIndicator size="large" color="#FFF" />
         </View>
       ) : (
-        <ScrollView style={styles.scrollContainer}>
+        <View style={styles.containerCards}>
           <TouchableOpacity
-            style={styles.botaoTodasDespesas}
+            style={styles.botaoTodas}
             onPress={() =>
               navigation.navigate("TodasDespesas", { despesas, viagem })
             }
           >
-            <Text style={styles.botaoTodasDespesasTexto}>Ver todas</Text>
+            <Text style={styles.textobotaoTodas}>Ver todas</Text>
           </TouchableOpacity>
-          <View style={styles.actionContainer}>
-            {despesaDaCategoria.map((categoria, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.button}
-                onPress={() =>
-                  navigation.navigate("DespesaPorCategoria", {
-                    categoria,
-                    viagem,
-                  })
-                }
-              >
-                <View style={styles.textContainer}>
-                  <MaterialCommunityIcons
-                    name={icones[categoria.categoriaId] || "folder"}
-                    size={25}
-                    color="#FFF"
-                  />
-                  <Text style={styles.buttonText}>
-                    {categoria.nome.length > 18
-                      ? `${categoria.nome.substring(0, 18)}...`
-                      : categoria.nome}
+          <ScrollView style={styles.scrollContainer}>
+            <View style={styles.actionContainer}>
+              {despesaDaCategoria.map((categoria, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.button}
+                  onPress={() =>
+                    navigation.navigate("DespesaPorCategoria", {
+                      categoria,
+                      viagem,
+                    })
+                  }
+                >
+                  <View style={styles.textContainer}>
+                    <MaterialCommunityIcons
+                      name={icones[categoria.categoriaId] || "folder"}
+                      size={25}
+                      color="#FFF"
+                    />
+                    <Text style={styles.buttonText}>
+                      {categoria.nome.length > 18
+                        ? `${categoria.nome.substring(0, 18)}...`
+                        : categoria.nome}
+                    </Text>
+                  </View>
+                  <Text style={styles.valueText}>
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(categoria.totalDespesas)}
                   </Text>
-                </View>
-                <Text style={styles.valueText}>
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(categoria.totalDespesas)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       )}
+
       <TouchableOpacity
         style={styles.botao}
         onPress={() => navigation.navigate("CadastroDespesa", { viagem })}
@@ -183,6 +186,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#00050D",
     paddingHorizontal: 25,
+  },
+  containerCards: {
+    flex: 1,
+    backgroundColor: "#00050D",
   },
   header: {
     flexDirection: "row",
@@ -214,7 +221,7 @@ const styles = StyleSheet.create({
     alignItems: "start",
   },
   infoContainer: {
-    marginTop: 40,
+    marginTop: 20,
   },
   statusRow: {
     flexDirection: "row",
@@ -253,12 +260,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   actionContainer: {
-    marginTop: 20,
+    marginTop: 50,
     alignItems: "center",
   },
   scrollContainer: {
     flexGrow: 1,
-    marginBottom: 150,
+    marginBottom: 125,
+    marginTop: 50,
   },
   button: {
     width: "100%",
@@ -289,18 +297,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     marginLeft: 10,
-  },
-  botaoTodasDespesas: {
-    color: "#FFF",
-    fontSize: 18,
-    width: "30%",
-    borderBottomColor: "#fff",
-    borderBottomWidth: 1,
-    alignItems: "center",
-  },
-  botaoTodasDespesasTexto: {
-    color: "#FFF",
-    fontSize: 18,
+    fontWeight: "bold",
   },
   botao: {
     backgroundColor: "#0E6EFF",
@@ -316,6 +313,22 @@ const styles = StyleSheet.create({
   textobotao: {
     color: "#FFF",
     fontSize: 20,
+    fontWeight: "bold",
+  },
+  botaoTodas: {
+    backgroundColor: "#0E6EFF",
+    width: 100,
+    height: 31,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    position: "absolute",
+    right: 2,
+  },
+  textobotaoTodas: {
+    color: "#FFF",
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
