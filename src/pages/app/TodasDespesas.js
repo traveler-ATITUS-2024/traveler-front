@@ -10,6 +10,7 @@ import {
   Modal,
   ActivityIndicator,
   ScrollView,
+  Share,
 } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -24,10 +25,11 @@ export default function MeusGastos({ navigation }) {
   const route = useRoute();
   const { despesas } = route.params;
   const { viagem } = route.params;
-
+  const { totalDespesas } = route.params;
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [modalExcluirDespesa, setModalExcluirDespesa] = useState(false);
+  const [modalVisualizarDespesa, setModalVisualizarDespesa] = useState(false);
   const [despesaSelecionadaId, setDespesaSelecionadaId] = useState(null);
   const [listaDespesas, setListaDespesas] = useState([]);
 
@@ -76,6 +78,17 @@ export default function MeusGastos({ navigation }) {
     8: "more",
   };
 
+  const categorias = {
+    1: "Alimentação",
+    2: "Hospedagem",
+    3: "Transporte",
+    4: "Compras",
+    5: "Ingressos",
+    6: "Seguro e Documentação",
+    7: "Saúde e bem-estar",
+    8: "Outros",
+  };
+
   const cores = {
     1: "#FFA500",
     2: "#ADD8E6",
@@ -92,6 +105,41 @@ export default function MeusGastos({ navigation }) {
       buscaMinhasDespesas();
     }, [])
   );
+
+  const toggleDespesaExpandida = (id) => {
+    setListaDespesas((prevDespesas) =>
+      prevDespesas.map((despesa) =>
+        despesa.id === id
+          ? { ...despesa, expanded: !despesa.expanded }
+          : despesa
+      )
+    );
+  };
+
+  const calculaPorcentagem = (valorParte, valorTodo) => {
+    return ((valorParte / valorTodo) * 100) / 100;
+  };
+
+  const compartilharDespesa = async (despesa) => {
+    try {
+      const message = `Despesa: ${despesa.nome}\nCategoria: ${
+        categorias[despesa.categoriaId]
+      }\nValor: ${new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 2,
+      }).format(despesa.valor)}\nData: ${dayjs(despesa.data)
+        .add(3, "hours")
+        .format("DD/MM/YYYY - HH:mm")}`;
+
+      await Share.share({
+        message: message,
+      });
+    } catch (error) {
+      console.error("Erro ao compartilhar a despesa:", error);
+      alert("Erro ao compartilhar a despesa.");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -114,19 +162,41 @@ export default function MeusGastos({ navigation }) {
       ) : (
         <ScrollView contentContainerStyle={styles.despesacontainer}>
           {listaDespesas.map((despesa) => (
-            <View key={despesa.id} style={styles.despesacard}>
+            <TouchableOpacity
+              key={despesa.id}
+              style={[
+                despesa.expanded
+                  ? styles.despesacardExpanded
+                  : styles.despesacard,
+                despesa.expanded && { height: despesa.expanded ? 200 : 120 },
+              ]}
+              onPress={() => toggleDespesaExpandida(despesa.id)}
+              onLongPress={() => compartilharDespesa(despesa)}
+            >
               <MaterialCommunityIcons
                 name={icones[despesa.categoriaId] || "folder"}
                 size={32}
                 color={cores[despesa.categoriaId] || "#FFF"}
               />
               <View style={styles.infoContainer}>
-                <Text style={styles.nomedespesa}>
-                  {despesa.nome.length > 20
+                <Text
+                  style={
+                    !despesa.expanded
+                      ? styles.nomedespesa
+                      : styles.nomedespesaExpanded
+                  }
+                >
+                  {despesa.nome.length > 20 && !despesa.expanded
                     ? `${despesa.nome.substring(0, 20)}...`
                     : despesa.nome}
                 </Text>
-                <Text style={styles.datadespesa}>
+                <Text
+                  style={
+                    !despesa.expanded
+                      ? styles.datadespesa
+                      : styles.datadespesaExpanded
+                  }
+                >
                   {despesa.data
                     ? dayjs(despesa.data)
                         .add(3, "hours")
@@ -134,29 +204,38 @@ export default function MeusGastos({ navigation }) {
                     : ""}
                 </Text>
               </View>
+              <View></View>
               <View style={styles.valordespesacontainer}>
-                <Text style={styles.valordespesa}>
+                <Text
+                  style={
+                    !despesa.expanded
+                      ? styles.valordespesa
+                      : styles.valordespesaExpanded
+                  }
+                >
                   {new Intl.NumberFormat("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                     maximumFractionDigits: 2,
                   }).format(despesa.valor)}
                 </Text>
-                {/* <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => {
-                    setDespesaSelecionadaId(despesa.id);
-                    setModalExcluirDespesa(true);
-                  }}
-                >
-                  {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Image source={lixeira} style={{ tintColor: "#FF3B30" }} />
-                  )}
-                </TouchableOpacity> */}
               </View>
-            </View>
+
+              {despesa.expanded && (
+                <View style={styles.expandedInfoContainer}>
+                  <Text style={styles.detalhes}>
+                    Representa{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "percent",
+                      maximumFractionDigits: 1,
+                    }).format(
+                      calculaPorcentagem(despesa.valor, totalDespesas)
+                    )}{" "}
+                    do total gasto.
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
           ))}
         </ScrollView>
       )}
@@ -196,7 +275,6 @@ export default function MeusGastos({ navigation }) {
                 ]}
                 onPress={() => {
                   setModalExcluirDespesa(false);
-                  setDespesaSelecionadaId(null);
                 }}
                 disabled={isLoading}
               >
@@ -228,7 +306,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     position: "absolute",
     top: 5,
-    left: 5,
+    left: 12,
   },
   titulo: {
     fontSize: 24,
@@ -242,7 +320,6 @@ const styles = StyleSheet.create({
   },
   despesacontainer: {
     marginTop: 20,
-    height: "100%",
     alignItems: "center",
   },
   despesacard: {
@@ -256,6 +333,21 @@ const styles = StyleSheet.create({
     width: "100%",
     borderBottomWidth: 3,
   },
+  despesacardExpanded: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderRadius: 15,
+    padding: 15,
+    marginVertical: 10,
+    width: "100%",
+    borderBottomWidth: 3,
+  },
+  expandedInfoContainer: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 5,
+  },
   infoContainer: {
     flex: 1,
     marginHorizontal: 10,
@@ -264,10 +356,22 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
   },
+  nomedespesaExpanded: {
+    marginTop: 8,
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   datadespesa: {
     color: "#696969",
     fontSize: 14,
     marginTop: 3,
+  },
+  datadespesaExpanded: {
+    color: "#696969",
+    fontSize: 16,
+    marginTop: 3,
+    textAlign: "center",
   },
   valordespesacontainer: {
     flexDirection: "row",
@@ -278,6 +382,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginRight: 10,
+  },
+  valordespesaExpanded: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  detalhes: {
+    color: "#fff",
   },
   deleteButton: {
     padding: 5,

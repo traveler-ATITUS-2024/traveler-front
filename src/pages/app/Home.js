@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   moneyTextRed: {
-    color: "#9B111E",
+    color: "red",
     fontSize: 15,
   },
   loading: {

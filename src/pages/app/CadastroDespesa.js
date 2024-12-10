@@ -123,7 +123,7 @@ export default function CadastroDespesa({ navigation }) {
           <Text style={styles.textoData}>
             {dataGasto
               ? dayjs(dataGasto).format("DD/MM/YYYY")
-              : "Data do gasto"}
+              : "Selecione a data"}
           </Text>
         </TouchableOpacity>
 
@@ -213,11 +213,10 @@ export default function CadastroDespesa({ navigation }) {
             value={nomeGasto}
             onChangeText={setNomeGasto}
             style={styles.tituloInput}
-            placeholder="Nome do gasto:"
+            placeholder="Título da despesa:"
             placeholderTextColor="#888"
           />
         </View>
-
         <View style={styles.dividerNome} />
 
         <TouchableOpacity
@@ -233,9 +232,9 @@ export default function CadastroDespesa({ navigation }) {
           </Text>
 
           <MaterialIcons
-            name="arrow-drop-down" // Nome do ícone de seta para baixo
-            size={28} // Tamanho do ícone
-            color="#fff" // Cor do ícone
+            name="arrow-drop-down"
+            size={28}
+            color="#fff"
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -315,6 +314,9 @@ const styles = StyleSheet.create({
     height: 30,
   },
   tituloContainer: {
+    marginHorizontal: 16,
+  },
+  descricaoContainer: {
     marginHorizontal: 16,
   },
   divider: {

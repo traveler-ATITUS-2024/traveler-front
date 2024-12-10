@@ -46,7 +46,7 @@ export default function MeusGastos({ navigation }) {
 
   const cores = {
     1: "#FFA500",
-    2: "#FF0000",
+    2: "#ADD8E6",
     3: "#0000FF",
     4: "#008000",
     5: "#800080",
@@ -146,7 +146,11 @@ export default function MeusGastos({ navigation }) {
           <TouchableOpacity
             style={styles.botaoTodas}
             onPress={() =>
-              navigation.navigate("TodasDespesas", { despesas, viagem })
+              navigation.navigate("TodasDespesas", {
+                despesas,
+                viagem,
+                totalDespesas,
+              })
             }
           >
             <Text style={styles.textobotaoTodas}>Ver todas</Text>
@@ -161,6 +165,7 @@ export default function MeusGastos({ navigation }) {
                     navigation.navigate("DespesaPorCategoria", {
                       categoria,
                       viagem,
+                      totalDespesas,
                     })
                   }
                 >
@@ -267,7 +272,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   moneyTextRed: {
-    color: "#9B111E",
+    color: "red",
     fontSize: 16,
     fontWeight: "bold",
   },

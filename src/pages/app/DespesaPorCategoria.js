@@ -8,6 +8,7 @@ import {
   Modal,
   ActivityIndicator,
   ScrollView,
+  Share,
 } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -16,11 +17,13 @@ import { buscarDespesas } from "../../services/gastosService";
 import lixeira from "../../../assets/lixeiraexcluir.png";
 import dayjs from "dayjs";
 import { deletarDespesa } from "../../services/gastosService";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function DespesaPorCategoria({ navigation }) {
   const route = useRoute();
   const { categoria } = route.params;
   const { viagem } = route.params;
+  const { totalDespesas } = route.params;
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [despesasDaCategoria, setDespesaDaCategoria] = useState([]);
@@ -70,6 +73,73 @@ export default function DespesaPorCategoria({ navigation }) {
       setIsLoading(false);
     }
   };
+  const categorias = {
+    1: "Alimentação",
+    2: "Hospedagem",
+    3: "Transporte",
+    4: "Compras",
+    5: "Ingressos",
+    6: "Seguro e Documentação",
+    7: "Saúde e bem-estar",
+    8: "Outros",
+  };
+
+  const icones = {
+    1: "silverware-fork-knife",
+    2: "bed",
+    3: "car",
+    4: "shopping",
+    5: "ticket",
+    6: "security",
+    7: "hospital",
+    8: "more",
+  };
+
+  const cores = {
+    1: "#FFA500",
+    2: "#ADD8E6",
+    3: "#0000FF",
+    4: "#008000",
+    5: "#800080",
+    6: "#808080",
+    7: "#FF0000",
+    8: "#FFD700",
+  };
+
+  const toggleDespesaExpandida = (id) => {
+    setDespesaDaCategoria((prevDespesas) =>
+      prevDespesas.map((despesa) =>
+        despesa.id === id
+          ? { ...despesa, expanded: !despesa.expanded }
+          : despesa
+      )
+    );
+  };
+
+  const calculaPorcentagem = (valorParte, valorTodo) => {
+    return ((valorParte / valorTodo) * 100) / 100;
+  };
+
+  const compartilharDespesa = async (despesa) => {
+    try {
+      const message = `Despesa: ${despesa.nome}\nCategoria: ${
+        categorias[despesa.categoriaId]
+      }\nValor: ${new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 2,
+      }).format(despesa.valor)}\nData: ${dayjs(despesa.data)
+        .add(3, "hours")
+        .format("DD/MM/YYYY - HH:mm")}`;
+
+      await Share.share({
+        message: message,
+      });
+    } catch (error) {
+      console.error("Erro ao compartilhar a despesa:", error);
+      alert("Erro ao compartilhar a despesa.");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -91,37 +161,80 @@ export default function DespesaPorCategoria({ navigation }) {
       ) : (
         <ScrollView contentContainerStyle={styles.despesacontainer}>
           {despesaFiltrada.map((despesa) => (
-            <View key={despesa.id} style={styles.despesacard}>
-              <View style={styles.suo}>
-                <Text style={styles.nomedespesa}>{despesa.nome}</Text>
-                <Text style={styles.datadespesa}>
+            <TouchableOpacity
+              key={despesa.id}
+              style={[
+                despesa.expanded
+                  ? styles.despesacardExpanded
+                  : styles.despesacard,
+                despesa.expanded && { height: despesa.expanded ? 200 : 120 },
+              ]}
+              onPress={() => toggleDespesaExpandida(despesa.id)}
+              onLongPress={() => compartilharDespesa(despesa)}
+            >
+              <MaterialCommunityIcons
+                name={icones[despesa.categoriaId] || "folder"}
+                size={32}
+                color={cores[despesa.categoriaId] || "#FFF"}
+              />
+              <View style={styles.infoContainer}>
+                <Text
+                  style={
+                    !despesa.expanded
+                      ? styles.nomedespesa
+                      : styles.nomedespesaExpanded
+                  }
+                >
+                  {despesa.nome.length > 20 && !despesa.expanded
+                    ? `${despesa.nome.substring(0, 20)}...`
+                    : despesa.nome}
+                </Text>
+                <Text
+                  style={
+                    !despesa.expanded
+                      ? styles.datadespesa
+                      : styles.datadespesaExpanded
+                  }
+                >
                   {despesa.data
-                    ? `${dayjs(despesa.data)
+                    ? dayjs(despesa.data)
                         .add(3, "hours")
-                        .format("DD - MMM - ")}${dayjs(despesa.data)
-                        .add(3, "hours")
-                        .format("HH:mm")}`
+                        .format("DD/MM - HH:mm")
                     : ""}
                 </Text>
               </View>
+              <View></View>
               <View style={styles.valordespesacontainer}>
-                <Text style={styles.valordespesa}>R$ {despesa.valor}</Text>
-                <View style={styles.separador}></View>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => {
-                    setDespesaSelecionadaId(despesa.id);
-                    setModalExcluirDespesa(true);
-                  }}
+                <Text
+                  style={
+                    !despesa.expanded
+                      ? styles.valordespesa
+                      : styles.valordespesaExpanded
+                  }
                 >
-                  {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Image source={lixeira} style={{ tintColor: "#FF3B30" }} />
-                  )}
-                </TouchableOpacity>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                    maximumFractionDigits: 2,
+                  }).format(despesa.valor)}
+                </Text>
               </View>
-            </View>
+
+              {despesa.expanded && (
+                <View style={styles.expandedInfoContainer}>
+                  <Text style={styles.detalhes}>
+                    Representa{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "percent",
+                      maximumFractionDigits: 1,
+                    }).format(
+                      calculaPorcentagem(despesa.valor, totalDespesas)
+                    )}{" "}
+                    do total gasto.
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
           ))}
         </ScrollView>
       )}
@@ -179,7 +292,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#00050D",
-    paddingHorizontal: 25,
+    paddingHorizontal: 10,
   },
   header: {
     flexDirection: "row",
@@ -193,7 +306,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     position: "absolute",
     top: 5,
-    left: 5,
+    left: 12,
   },
   titulo: {
     fontSize: 24,
@@ -206,43 +319,77 @@ const styles = StyleSheet.create({
   },
   despesacontainer: {
     marginTop: 20,
-    marginEnd: 1,
-    marginStart: 1,
-    backgroundColor: "#020913",
-    borderRadius: 32,
-    height: "100%",
     alignItems: "center",
   },
+  infoContainer: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
   despesacard: {
-    backgroundColor: "#061730",
-    borderRadius: 10,
-    padding: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: 5,
+    borderRadius: 15,
+    padding: 15,
     marginVertical: 10,
-    width: "90%",
+    width: "100%",
+    borderBottomWidth: 3,
+  },
+  despesacardExpanded: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderRadius: 15,
+    padding: 15,
+    marginVertical: 10,
+    width: "100%",
+    borderBottomWidth: 3,
+  },
+  expandedInfoContainer: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 5,
   },
   nomedespesa: {
     color: "#ffffff",
     fontSize: 16,
+  },
+  nomedespesaExpanded: {
+    marginTop: 8,
+    color: "#ffffff",
+    fontSize: 18,
     fontWeight: "bold",
   },
   datadespesa: {
-    color: "#a9a9a9",
+    color: "#696969",
     fontSize: 14,
+    marginTop: 3,
+  },
+  datadespesaExpanded: {
+    color: "#696969",
+    fontSize: 16,
+    marginTop: 3,
+    textAlign: "center",
   },
   valordespesacontainer: {
     flexDirection: "row",
-    width: "40%",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginEnd: 10,
   },
   valordespesa: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
+    marginRight: 10,
+  },
+  valordespesaExpanded: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  detalhes: {
+    color: "#fff",
   },
   separador: {
     width: 2,
