@@ -111,7 +111,7 @@ export default function MeusGastos({ navigation }) {
       prevDespesas.map((despesa) =>
         despesa.id === id
           ? { ...despesa, expanded: !despesa.expanded }
-          : despesa
+          : { ...despesa, expanded: false }
       )
     );
   };
