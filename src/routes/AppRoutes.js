@@ -60,7 +60,7 @@ function TabRoutes() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                color: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                color: focused ? "#071222" : "rgba(255,255,255,0.5)",
                 fontSize: 12,
               }}
             ></Text>
@@ -85,7 +85,7 @@ function TabRoutes() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                color: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                color: focused ? "#071222" : "rgba(255,255,255,0.5)",
                 fontSize: 12,
               }}
             ></Text>

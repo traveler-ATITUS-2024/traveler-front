@@ -360,6 +360,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
   datadespesa: {
     color: "#696969",
