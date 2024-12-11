@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Share,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -30,7 +31,7 @@ export default function MeusGastos({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [modalExcluirDespesa, setModalExcluirDespesa] = useState(false);
   const [modalVisualizarDespesa, setModalVisualizarDespesa] = useState(false);
-  const [despesaSelecionadaId, setDespesaSelecionadaId] = useState(null);
+  const [despesaSelecionada, setDespesaSelecionada] = useState(null);
   const [listaDespesas, setListaDespesas] = useState([]);
 
   const buscaMinhasDespesas = async () => {
@@ -49,15 +50,15 @@ export default function MeusGastos({ navigation }) {
   };
 
   const deletarMinhaDespesa = async () => {
-    if (!despesaSelecionadaId) return;
+    if (!despesaSelecionada) return;
 
     try {
       setIsLoading(true);
-      const response = await deletarDespesa(despesaSelecionadaId, token);
+      const response = await deletarDespesa(despesaSelecionada, token);
 
       if (response) {
         setModalExcluirDespesa(false);
-        setDespesaSelecionadaId(null);
+        setDespesaSelecionada(null);
         buscaMinhasDespesas();
       }
     } catch (error) {
@@ -171,7 +172,10 @@ export default function MeusGastos({ navigation }) {
                 despesa.expanded && { height: despesa.expanded ? 200 : 120 },
               ]}
               onPress={() => toggleDespesaExpandida(despesa.id)}
-              onLongPress={() => compartilharDespesa(despesa)}
+              onLongPress={() => {
+                setModalVisualizarDespesa(true);
+                setDespesaSelecionada(despesa);
+              }}
             >
               <MaterialCommunityIcons
                 name={icones[despesa.categoriaId] || "folder"}
@@ -245,7 +249,7 @@ export default function MeusGastos({ navigation }) {
         visible={modalExcluirDespesa}
         onRequestClose={() => {
           setModalExcluirDespesa(false);
-          setDespesaSelecionadaId(null);
+          setDespesaSelecionada(null);
         }}
       >
         <View style={styles.modalOverlay}>
@@ -283,6 +287,63 @@ export default function MeusGastos({ navigation }) {
             </View>
           </View>
         </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisualizarDespesa}
+        onRequestClose={() => {
+          setModalVisualizarDespesa(false);
+          setDespesaSelecionada(null);
+        }}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setModalVisualizarDespesa(false);
+            setDespesaSelecionada(null);
+          }}
+        >
+          <View style={styles.modalOverlayDetails}>
+            {/* Impede que o clique no conteúdo interno feche o modal */}
+            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+              <View style={styles.modalContentDetails}>
+                <Text style={styles.modalTitleDetails}>Ações da despesa</Text>
+                <View style={styles.modalButtonsDetails}>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalButtonConfirmDetails,
+                      { backgroundColor: "#F44336" },
+                    ]}
+                    onPress={() => {
+                      setModalExcluirDespesa(true);
+                    }}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.modalButtonTextDetails}>Excluir</Text>
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalButtonShareDetails,
+                      isLoading && styles.disabledButton,
+                    ]}
+                    onPress={() => {
+                      compartilharDespesa(despesaSelecionada);
+                    }}
+                    disabled={isLoading}
+                  >
+                    <Text style={styles.modalButtonTextDetails}>
+                      Compartilhar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );
@@ -442,6 +503,63 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  modalOverlayDetails: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContentDetails: {
+    height: "30%",
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitleDetails: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  modalButtonsDetails: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  modalButtonConfirmDetails: {
+    flex: 1,
+    marginHorizontal: 10,
+    padding: 10,
+    bottom: 80,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalButtonShareDetails: {
+    flex: 1,
+    marginHorizontal: 10,
+    padding: 10,
+    bottom: 80,
+    borderRadius: 8,
+    backgroundColor: "#686868",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalButtonTextDetails: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   disabledButton: {
     opacity: 0.6,

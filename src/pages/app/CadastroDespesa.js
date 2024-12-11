@@ -66,7 +66,6 @@ export default function CadastroDespesa({ navigation }) {
         Alert.alert("Por favor, preencha todas as informações.");
         return;
       }
-
       const response = await adicionarDespesa(
         viagem.id,
         categoriaSelecionada,
@@ -215,6 +214,7 @@ export default function CadastroDespesa({ navigation }) {
             style={styles.tituloInput}
             placeholder="Título da despesa:"
             placeholderTextColor="#888"
+            maxLength={30}
           />
         </View>
         <View style={styles.dividerNome} />
