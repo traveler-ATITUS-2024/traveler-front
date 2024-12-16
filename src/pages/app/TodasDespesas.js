@@ -54,7 +54,7 @@ export default function MeusGastos({ navigation }) {
 
     try {
       setIsLoading(true);
-      const response = await deletarDespesa(despesaSelecionada, token);
+      const response = await deletarDespesa(despesaSelecionada.id, token);
 
       if (response) {
         setModalExcluirDespesa(false);

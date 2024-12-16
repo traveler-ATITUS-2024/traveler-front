@@ -195,8 +195,9 @@ export default function MeusGastos({ navigation }) {
       )}
 
       <TouchableOpacity
-        style={styles.botao}
+        style={viagem.statusId === 1 ? styles.botao : styles.botaoDisabled}
         onPress={() => navigation.navigate("CadastroDespesa", { viagem })}
+        disabled={viagem.statusId === 2}
       >
         <Text style={styles.textobotao}>+ Adicionar Despesa</Text>
       </TouchableOpacity>
@@ -337,6 +338,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     position: "absolute",
     bottom: 50,
+  },
+  botaoDisabled: {
+    backgroundColor: "#0A4DB3",
+    width: 315,
+    height: 51,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 50,
+    opacity: 0.6,
   },
   textobotao: {
     color: "#FFF",
