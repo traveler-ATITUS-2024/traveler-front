@@ -279,6 +279,7 @@ export default function MeusGastos({ navigation }) {
                 ]}
                 onPress={() => {
                   setModalExcluirDespesa(false);
+                  setModalVisualizarDespesa(true);
                 }}
                 disabled={isLoading}
               >
@@ -304,7 +305,6 @@ export default function MeusGastos({ navigation }) {
           }}
         >
           <View style={styles.modalOverlayDetails}>
-            {/* Impede que o clique no conteúdo interno feche o modal */}
             <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
               <View style={styles.modalContentDetails}>
                 <Text style={styles.modalTitleDetails}>Ações da despesa</Text>
@@ -316,6 +316,7 @@ export default function MeusGastos({ navigation }) {
                     ]}
                     onPress={() => {
                       setModalExcluirDespesa(true);
+                      setModalVisualizarDespesa(false);
                     }}
                     disabled={isLoading}
                   >
