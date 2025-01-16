@@ -81,7 +81,7 @@ export default function SignUp({ navigation }) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior="padding"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.container}>
           <View style={styles.header}>
