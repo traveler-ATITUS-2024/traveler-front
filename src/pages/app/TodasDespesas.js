@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import logo from "../../../assets/logo.png";
+
+import React, { useState, version } from "react";
 import {
   View,
   Text,
@@ -13,36 +15,24 @@ import {
 } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useAuth } from "../../context/AuthContext";
-import { buscarDespesas } from "../../services/gastosService";
 import lixeira from "../../../assets/lixeiraexcluir.png";
 import dayjs from "dayjs";
+import { useAuth } from "../../context/AuthContext";
 import { deletarDespesa } from "../../services/gastosService";
+import { buscarDespesas } from "../../services/gastosService";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function DespesaPorCategoria({ navigation }) {
+export default function MeusGastos({ navigation }) {
   const route = useRoute();
-  const { categoria } = route.params;
+  const { despesas } = route.params;
   const { viagem } = route.params;
   const { totalDespesas } = route.params;
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [despesasDaCategoria, setDespesaDaCategoria] = useState([]);
-  const despesaFiltrada = despesasDaCategoria.filter(
-    (despesasDaCategoria) =>
-      despesasDaCategoria.categoriaId === categoria.categoriaId
-  );
   const [modalExcluirDespesa, setModalExcluirDespesa] = useState(false);
-
-  const [despesaSelecionada, setDespesaSelecionada] = useState(null);
-
   const [modalVisualizarDespesa, setModalVisualizarDespesa] = useState(false);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      buscaMinhasDespesas();
-    }, [])
-  );
+  const [despesaSelecionada, setDespesaSelecionada] = useState(null);
+  const [listaDespesas, setListaDespesas] = useState([]);
 
   const buscaMinhasDespesas = async () => {
     try {
@@ -50,7 +40,7 @@ export default function DespesaPorCategoria({ navigation }) {
       const response = await buscarDespesas(viagem.id, token);
 
       if (response) {
-        setDespesaDaCategoria(response);
+        setListaDespesas(response);
       }
     } catch (error) {
       console.error(error);
@@ -64,7 +54,6 @@ export default function DespesaPorCategoria({ navigation }) {
 
     try {
       setIsLoading(true);
-
       const response = await deletarDespesa(despesaSelecionada.id, token);
 
       if (response) {
@@ -78,16 +67,6 @@ export default function DespesaPorCategoria({ navigation }) {
       setIsLoading(false);
     }
   };
-  const categorias = {
-    1: "Alimentação",
-    2: "Hospedagem",
-    3: "Transporte",
-    4: "Compras",
-    5: "Ingressos",
-    6: "Seguro e Documentação",
-    7: "Saúde e bem-estar",
-    8: "Outros",
-  };
 
   const icones = {
     1: "silverware-fork-knife",
@@ -98,6 +77,17 @@ export default function DespesaPorCategoria({ navigation }) {
     6: "security",
     7: "hospital",
     8: "more",
+  };
+
+  const categorias = {
+    1: "Alimentação",
+    2: "Hospedagem",
+    3: "Transporte",
+    4: "Compras",
+    5: "Ingressos",
+    6: "Seguro e Documentação",
+    7: "Saúde e bem-estar",
+    8: "Outros",
   };
 
   const cores = {
@@ -111,8 +101,14 @@ export default function DespesaPorCategoria({ navigation }) {
     8: "#FFD700",
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      buscaMinhasDespesas();
+    }, [])
+  );
+
   const toggleDespesaExpandida = (id) => {
-    setDespesaDaCategoria((prevDespesas) =>
+    setListaDespesas((prevDespesas) =>
       prevDespesas.map((despesa) =>
         despesa.id === id
           ? { ...despesa, expanded: !despesa.expanded }
@@ -155,9 +151,10 @@ export default function DespesaPorCategoria({ navigation }) {
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-
-        <Text style={styles.titulo}>{categoria.nome}</Text>
+        <Text style={styles.titulo}>Todos os Gastos</Text>
       </View>
+
+      <View style={styles.divider} />
 
       {isLoading ? (
         <View style={styles.loading}>
@@ -165,7 +162,7 @@ export default function DespesaPorCategoria({ navigation }) {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.despesacontainer}>
-          {despesaFiltrada.map((despesa) => (
+          {listaDespesas.map((despesa) => (
             <TouchableOpacity
               key={despesa.id}
               style={[
@@ -249,63 +246,6 @@ export default function DespesaPorCategoria({ navigation }) {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisualizarDespesa}
-        onRequestClose={() => {
-          setModalVisualizarDespesa(false);
-          setDespesaSelecionada(null);
-        }}
-      >
-        <TouchableWithoutFeedback
-          onPress={() => {
-            setModalVisualizarDespesa(false);
-            setDespesaSelecionada(null);
-          }}
-        >
-          <View style={styles.modalOverlayDetails}>
-            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-              <View style={styles.modalContentDetails}>
-                <Text style={styles.modalTitleDetails}>Ações da despesa</Text>
-                <View style={styles.modalButtonsDetails}>
-                  <TouchableOpacity
-                    style={[
-                      styles.modalButtonConfirmDetails,
-                      { backgroundColor: "#F44336" },
-                    ]}
-                    onPress={() => {
-                      setModalVisualizarDespesa(false);
-                      setModalExcluirDespesa(true);
-                    }}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <Text style={styles.modalButtonTextDetails}>Excluir</Text>
-                    )}
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.modalButtonShareDetails,
-                      isLoading && styles.disabledButton,
-                    ]}
-                    onPress={() => {
-                      compartilharDespesa(despesaSelecionada);
-                    }}
-                    disabled={isLoading}
-                  >
-                    <Text style={styles.modalButtonTextDetails}>
-                      Compartilhar
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-      <Modal
-        animationType="slide"
-        transparent={true}
         visible={modalExcluirDespesa}
         onRequestClose={() => {
           setModalExcluirDespesa(false);
@@ -349,6 +289,63 @@ export default function DespesaPorCategoria({ navigation }) {
           </View>
         </View>
       </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisualizarDespesa}
+        onRequestClose={() => {
+          setModalVisualizarDespesa(false);
+          setDespesaSelecionada(null);
+        }}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setModalVisualizarDespesa(false);
+            setDespesaSelecionada(null);
+          }}
+        >
+          <View style={styles.modalOverlayDetails}>
+            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+              <View style={styles.modalContentDetails}>
+                <Text style={styles.modalTitleDetails}>Ações da despesa</Text>
+                <View style={styles.modalButtonsDetails}>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalButtonConfirmDetails,
+                      { backgroundColor: "#F44336" },
+                    ]}
+                    onPress={() => {
+                      setModalExcluirDespesa(true);
+                      setModalVisualizarDespesa(false);
+                    }}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.modalButtonTextDetails}>Excluir</Text>
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalButtonShareDetails,
+                      isLoading && styles.disabledButton,
+                    ]}
+                    onPress={() => {
+                      compartilharDespesa(despesaSelecionada);
+                    }}
+                    disabled={isLoading}
+                  >
+                    <Text style={styles.modalButtonTextDetails}>
+                      Compartilhar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
@@ -380,15 +377,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     textAlign: "center",
     flex: 1,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 20,
   },
   despesacontainer: {
     marginTop: 20,
     alignItems: "center",
-  },
-  infoContainer: {
-    flex: 1,
-    marginHorizontal: 10,
   },
   despesacard: {
     flexDirection: "row",
@@ -415,6 +409,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 10,
     borderRadius: 5,
+  },
+  infoContainer: {
+    flex: 1,
+    marginHorizontal: 10,
   },
   nomedespesa: {
     color: "#ffffff",
@@ -457,10 +455,8 @@ const styles = StyleSheet.create({
   detalhes: {
     color: "#fff",
   },
-  separador: {
-    width: 2,
-    backgroundColor: "#888",
-    height: 30,
+  deleteButton: {
+    padding: 5,
   },
   loading: {
     flex: 1,
@@ -508,6 +504,9 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   modalOverlayDetails: {
     flex: 1,

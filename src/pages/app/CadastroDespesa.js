@@ -8,34 +8,36 @@ import {
   Text,
   Modal,
   ActivityIndicator,
+  Alert,
   Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import CurrencyInput from "react-native-currency-input";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../../assets/logo.png";
 import flechaesquerda from "../../../assets/flechaesquerda.png";
 import calendario from "../../../assets/calendario.png";
 import relogio from "../../../assets/relogio.png";
 import dayjs from "dayjs";
-import RNPickerSelect from "react-native-picker-select";
-import Icon from "react-native-vector-icons/Ionicons";
 import utc from "dayjs/plugin/utc";
 import { adicionarDespesa } from "../../services/gastosService";
 import { useRoute } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import RNPickerSelect from "react-native-picker-select";
 
 dayjs.extend(utc);
-
 const categorias = [
-  { id: 1, nome: "Alimentação" },
-  { id: 2, nome: "Hospedagem" },
-  { id: 3, nome: "Transporte" },
-  { id: 4, nome: "Compras" },
-  { id: 5, nome: "Ingressos" },
-  { id: 6, nome: "Seguro e Documentação" },
-  { id: 7, nome: "Saúde e bem-estar" },
-  { id: 8, nome: "Outros" },
+  { label: "Alimentação", value: 1 },
+  { label: "Hospedagem", value: 2 },
+  { label: "Transporte", value: 3 },
+  { label: "Compras", value: 4 },
+  { label: "Ingressos", value: 5 },
+  { label: "Seguro e Documentação", value: 6 },
+  { label: "Saúde e bem-estar", value: 7 },
+  { label: "Outros", value: 8 },
 ];
 
 export default function CadastroDespesa({ navigation }) {
@@ -51,26 +53,29 @@ export default function CadastroDespesa({ navigation }) {
     return dataFuso.toISOString();
   });
   const [valorDespesa, setValorDespesa] = useState(0);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [nomeGasto, setNomeGasto] = useState("");
-
-  const onChangeTime = (event, selectedTime) => {
-    const currentTime = selectedTime
-      ? dayjs(selectedTime).utcOffset(-3).toDate()
-      : horaGasto;
-    setRelogioVisivel(false);
-    setHoraGasto(currentTime);
-  };
+  const [categoriaModalVisivel, setCategoriaModalVisivel] = useState(false);
 
   const adicionarNovaDespesa = async () => {
     try {
       setIsLoading(true);
+
+      if (!dataGasto || !horaGasto || !nomeGasto || !categoriaSelecionada) {
+        Alert.alert("Por favor, preencha todas as informações.");
+        return;
+      }
+      if (!valorDespesa) { 
+        Alert.alert("Não é possível cadastrar despesa sem valor.");
+        return;
+      }
       const response = await adicionarDespesa(
         viagem.id,
         categoriaSelecionada,
         nomeGasto,
         dataGasto,
+        horaGasto,
         valorDespesa,
         token
       );
@@ -80,165 +85,209 @@ export default function CadastroDespesa({ navigation }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.flechaContainer}
+          >
+            <Image
+              source={flechaesquerda}
+              style={[styles.flecha, { tintColor: "#FFFF" }]}
+            />
+          </TouchableOpacity>
+          <Image source={logo} style={styles.logo} />
+        </View>
+
+        <View style={styles.gastoContainer}>
+          <Text style={styles.gastoLabel}>Valor :</Text>
+          <CurrencyInput
+            style={styles.inputGasto}
+            value={valorDespesa}
+            onChangeValue={setValorDespesa}
+            keyboardType="numeric"
+            prefix="R$ "
+          />
+        </View>
+        <View style={styles.divider} />
+
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.flechaContainer}
+          onPress={() => setCalendarioVisivel(true)}
+          style={styles.dataContainer}
         >
-          <Image
-            source={flechaesquerda}
-            style={[styles.flecha, { tintColor: "#FFFF" }]}
+          <Image source={calendario} style={styles.iconecalendario} />
+          <Text style={styles.textoData}>
+            {dataGasto
+              ? dayjs(dataGasto).format("DD/MM/YYYY")
+              : "Selecione a data"}
+          </Text>
+        </TouchableOpacity>
+
+        <Modal
+          visible={calendarioVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setCalendarioVisivel(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            onPress={() => setCalendarioVisivel(false)}
+            activeOpacity={1}
+          >
+            <TouchableOpacity
+              style={styles.modalContent}
+              activeOpacity={1}
+              onPress={() => {}}
+            >
+              <Calendar
+                style={styles.calendario}
+                theme={styles.temacalendario}
+                minDate={new Date().toDateString()}
+                onDayPress={(day) => {
+                  setDataGasto(dayjs(day.dateString).toISOString());
+                  setCalendarioVisivel(false);
+                }}
+              />
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
+
+        <TouchableOpacity
+          onPress={() => setRelogioVisivel(true)}
+          style={styles.horaContainer}
+        >
+          <Image source={relogio} style={styles.iconerelogio} />
+          <Text style={styles.textoHora}>
+            {horaGasto ? dayjs(horaGasto).format("HH:mm") : "Horário do gasto"}
+          </Text>
+        </TouchableOpacity>
+
+        <Modal
+          visible={relogioVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setRelogioVisivel(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            onPress={() => setRelogioVisivel(false)}
+            activeOpacity={1}
+          >
+            <TouchableOpacity
+              style={styles.modalContent}
+              activeOpacity={1}
+              onPress={() => {}}
+            >
+              <DateTimePicker
+                value={horaGasto ? new Date(horaGasto) : new Date()}
+                mode="time"
+                is24Hour={true}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={(event, selectedTime) => {
+                  if (selectedTime) {
+                    setHoraGasto(dayjs(selectedTime).utcOffset(-3).toDate());
+                    {
+                      Platform.OS != "ios" && setRelogioVisivel(false);
+                    }
+                  }
+                }}
+              />
+              {Platform.OS === "ios" && (
+                <TouchableOpacity
+                  style={styles.confirmButton}
+                  onPress={() => setRelogioVisivel(false)}
+                >
+                  <Text style={styles.confirmButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
+
+        <View style={styles.tituloContainer}>
+          <TextInput
+            value={nomeGasto}
+            onChangeText={setNomeGasto}
+            style={styles.tituloInput}
+            placeholder="Título da despesa:"
+            placeholderTextColor="#888"
+            maxLength={30}
+          />
+        </View>
+        <View style={styles.dividerNome} />
+
+        <TouchableOpacity
+          onPress={() => setCategoriaModalVisivel(true)}
+          style={styles.categoriaContainer}
+        >
+          <Text style={styles.textoCategoria}>
+            {categoriaSelecionada
+              ? categorias.find(
+                  (categoria) => categoria.value === categoriaSelecionada
+                )?.label
+              : "Selecione a Categoria"}
+          </Text>
+
+          <MaterialIcons
+            name="arrow-drop-down"
+            size={28}
+            color="#fff"
+            style={styles.icon}
           />
         </TouchableOpacity>
-        <Image source={logo} style={styles.logo} />
-      </View>
 
-      <View style={styles.gastoContainer}>
-        <Text style={styles.gastoLabel}>Valor :</Text>
-        <CurrencyInput
-          style={styles.inputGasto}
-          value={valorDespesa}
-          onChangeValue={setValorDespesa}
-          keyboardType="numeric"
-          prefix="R$ "
-        />
-      </View>
-      <View style={styles.divider} />
-
-      <TouchableOpacity
-        onPress={() => setCalendarioVisivel(true)}
-        style={styles.dataContainer}
-      >
-        <Image source={calendario} style={styles.iconecalendario} />
-        <Text style={styles.textoData}>
-          {dataGasto
-            ? dayjs(dataGasto).format("DD/MM/YYYY")
-            : "Data do gasto"}
-        </Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={calendarioVisivel}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setCalendarioVisivel(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          onPress={() => setCalendarioVisivel(false)}
-          activeOpacity={1}
+        <Modal
+          visible={categoriaModalVisivel}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setCategoriaModalVisivel(false)}
         >
           <TouchableOpacity
-            style={styles.modalContent}
+            style={styles.modalOverlay}
+            onPress={() => setCategoriaModalVisivel(false)}
             activeOpacity={1}
-            onPress={() => { }}
           >
-            <Calendar
-              style={styles.calendario}
-              theme={styles.temacalendario}
-              minDate={new Date().toDateString()}
-              onDayPress={(day) => {
-                setDataGasto(dayjs(day.dateString).toISOString());
-                setCalendarioVisivel(false);
-              }}
-            />
+            <View style={styles.modalContentCategoria}>
+              {categorias.map((categoria) => (
+                <TouchableOpacity
+                  key={categoria.value}
+                  onPress={() => {
+                    setCategoriaSelecionada(categoria.value);
+                    setCategoriaModalVisivel(false);
+                  }}
+                  style={styles.categoriaOption}
+                >
+                  <Text style={styles.textoCategoriaOption}>
+                    {categoria.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        </Modal>
 
-      <TouchableOpacity
-        onPress={() => setRelogioVisivel(true)}
-        style={styles.horaContainer}
-      >
-        <Image source={relogio} style={styles.iconerelogio} />
-        <Text style={styles.textoHora}>
-          {horaGasto ? dayjs(horaGasto).format("HH:mm") : "Horário do gasto"}
-        </Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={relogioVisivel}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setRelogioVisivel(false)}
-      >
         <TouchableOpacity
-          style={styles.modalOverlay}
-          onPress={() => setRelogioVisivel(false)}
-          activeOpacity={1}
+          style={
+            isLoading ? styles.botaoAdicionarDisable : styles.botaoAdicionar
+          }
+          onPress={adicionarNovaDespesa}
+          disabled={isLoading}
         >
-          <TouchableOpacity
-            style={styles.modalContent}
-            activeOpacity={1}
-            onPress={() => { }}
-          >
-            <DateTimePicker
-              value={new Date()}
-              mode="time"
-              is24Hour={true}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={onChangeTime}
-            />
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
-
-      <View style={styles.tituloContainer}>
-        <TextInput
-          value={nomeGasto}
-          onChangeText={setNomeGasto}
-          style={styles.tituloInput}
-          placeholder="Nome do gasto:"
-          placeholderTextColor="#888"
-        />
-      </View>
-
-      <View style={styles.dividerNome} />
-
-      <View style={styles.categoriaContainer}>
-        <RNPickerSelect
-          onValueChange={(value) => setCategoriaSelecionada(value)}
-          items={categorias.map((item) => ({
-            label: item.nome,
-            value: item.id,
-          }))}
-          placeholder={{
-            label: "Selecione uma categoria",
-            value: null,
-            color: "#888",
-          }}
-          style={{
-            inputIOS: styles.picker,
-            inputAndroid: styles.picker,
-            iconContainer: styles.iconContainer,
-            placeholder: { color: "#FFF" },
-          }}
-          Icon={() => (
-            <Icon name="chevron-down" size={20} color="#FFF"
-              style={{ marginHorizontal: 16, }}
-            />
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.textoBotao}>+ Adicionar</Text>
           )}
-        />
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        style={isLoading ? styles.botaoAdicionarDisable : styles.botaoAdicionar}
-        onPress={adicionarNovaDespesa}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.textoBotao}>+ Adicionar</Text>
-        )}
-      </TouchableOpacity>
-
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -271,6 +320,9 @@ const styles = StyleSheet.create({
   tituloContainer: {
     marginHorizontal: 16,
   },
+  descricaoContainer: {
+    marginHorizontal: 16,
+  },
   divider: {
     height: 1,
     backgroundColor: "#888",
@@ -300,7 +352,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 22,
     fontWeight: "bold",
-    marginLeft: '2%',
+    marginLeft: "2%",
   },
   inputGasto: {
     color: "#999",
@@ -308,14 +360,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
     textAlign: "right",
-    marginRight: '2%',
+    marginRight: "2%",
   },
   dataContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 30,
     marginHorizontal: 16,
-    height: 50, 
+    height: 50,
   },
   modalOverlay: {
     flex: 1,
@@ -324,11 +376,52 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    width: 300,
-    height: 300,
-    borderRadius: 8,
-    padding: 10,
+    backgroundColor: "#00050D",
+    borderRadius: 10,
+    padding: 16,
+    width: "80%",
     alignItems: "center",
+  },
+  modalContentCategoria: {
+    backgroundColor: "#00050D",
+    width: "85%",
+    borderRadius: 15,
+    padding: 20,
+    maxHeight: "80%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  categoriaOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  textoCategoriaOption: {
+    fontSize: 18,
+    color: "#fff",
+  },
+  textoCategoria: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginLeft: 20,
+  },
+  confirmButton: {
+    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   calendario: {
     width: 300,
@@ -349,33 +442,35 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   iconecalendario: {
-    width: 32, 
+    width: 32,
     height: 32,
-    marginRight: 10, 
+    marginRight: 10,
   },
   iconerelogio: {
-    width: 32, 
+    width: 32,
     height: 32,
-    marginRight: 10, 
+    marginRight: 10,
   },
   horaContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
     marginHorizontal: 16,
-    height: 50, 
+    height: 50,
   },
   textoHora: {
     color: "#fff",
     fontSize: 18,
   },
   categoriaContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 16,
     marginTop: 20,
     height: 50,
     borderRadius: 40,
     backgroundColor: "#071222",
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   iconContainer: {
     top: 14,
@@ -383,10 +478,38 @@ const styles = StyleSheet.create({
   picker: {
     color: "#FFF",
     marginLeft: 6,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingVertical: 12,
     paddingLeft: 16,
-    fontSize: 16
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  pickerInput: {
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 20,
+  },
+  selectedText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#555",
+  },
+  iconContainer: {
+    top: 10,
+    right: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
   botaoAdicionar: {
     backgroundColor: "#0E6EFF",
@@ -396,7 +519,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 20,
-    top: '88%',
+    top: "88%",
   },
   botaoAdicionarDisable: {
     backgroundColor: "#0E6EFF",
@@ -406,7 +529,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     right: 20,
-    top: '88%',
+    top: "88%",
     opacity: 0.6,
   },
   textoBotao: {
