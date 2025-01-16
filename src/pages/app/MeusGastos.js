@@ -1,6 +1,6 @@
 import logo from "../../../assets/logo.png";
 
-import React, { useState } from "react";
+import React, { useState, version } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,10 @@ import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../../context/AuthContext";
-import { buscarDespesas, buscarDespesasDaCategoria } from "../../services/gastosService";
+import {
+  buscarDespesas,
+  buscarDespesasDaCategoria,
+} from "../../services/gastosService";
 
 export default function MeusGastos({ navigation }) {
   const route = useRoute();
@@ -23,7 +26,7 @@ export default function MeusGastos({ navigation }) {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [despesas, setDespesas] = useState([]);
-  const [despesaDaCategoria, setDespesaDaCategoria] = useState([])
+  const [despesaDaCategoria, setDespesaDaCategoria] = useState([]);
 
   const totalDespesas = despesaDaCategoria.reduce(
     (acc, categoria) => acc + categoria.totalDespesas,
@@ -38,35 +41,44 @@ export default function MeusGastos({ navigation }) {
     5: "ticket",
     6: "security",
     7: "hospital",
-    8: "more"
+    8: "more",
   };
 
+  const cores = {
+    1: "#FFA500",
+    2: "#ADD8E6",
+    3: "#0000FF",
+    4: "#008000",
+    5: "#800080",
+    6: "#808080",
+    7: "#FF0000",
+    8: "#FFD700",
+  };
 
   useFocusEffect(
     React.useCallback(() => {
-      buscarDespesaPorCategoria()
-      buscaMinhasDespesas()
+      buscarDespesaPorCategoria();
+      buscaMinhasDespesas();
     }, [])
   );
 
   const buscarDespesaPorCategoria = async () => {
     try {
       setLoading(true);
-      const response = await buscarDespesasDaCategoria(viagem.id, token)
+      const response = await buscarDespesasDaCategoria(viagem.id, token);
 
       if (response) {
-        setDespesaDaCategoria(response)
+        setDespesaDaCategoria(response);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const buscaMinhasDespesas = async () => {
     try {
       setLoading(true);
       const response = await buscarDespesas(viagem.id, token);
-
 
       if (response) {
         setDespesas(response);
@@ -98,19 +110,26 @@ export default function MeusGastos({ navigation }) {
         <View style={styles.statusRow}>
           <Text style={styles.meusGastos}>Meus Gastos:</Text>
           <View style={styles.valueContainer}>
-            <Text style={styles.moneyTextGray}>
+            <Text
+              style={
+                totalDespesas <= viagem.valorPrv
+                  ? styles.moneyText
+                  : styles.moneyTextRed
+              }
+            >
+              {" "}
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-                maximumFractionDigits: 0,
-              }).format(viagem.valorPrv)}{" "}
+              }).format(totalDespesas)}
             </Text>
-            <Text style={styles.moneyText}>
+            <Text style={styles.moneyTextGray}>
               /{" "}
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(totalDespesas)}{" "}
+                maximumFractionDigits: 0,
+              }).format(viagem.valorPrv)}
             </Text>
           </View>
         </View>
@@ -123,36 +142,62 @@ export default function MeusGastos({ navigation }) {
           <ActivityIndicator size="large" color="#FFF" />
         </View>
       ) : (
-        <ScrollView style={styles.scrollContainer}>
-          <View style={styles.actionContainer}>
-            {despesaDaCategoria.map((categoria, index) => (
-              <TouchableOpacity key={index} style={styles.button}
-                onPress={() => navigation.navigate("DespesaPorCategoria", { categoria, viagem })}
-              >
-                <View style={styles.textContainer}>
-                  <MaterialCommunityIcons
-                    name={icones[categoria.categoriaId] || "folder"}
-                    size={25}
-                    color="#FFF"
-                  />
-                  <Text style={styles.buttonText}>
-                    {categoria.nome.length > 18 ? `${categoria.nome.substring(0, 18)}...` : categoria.nome}
+        <View style={styles.containerCards}>
+          <TouchableOpacity
+            style={styles.botaoTodas}
+            onPress={() =>
+              navigation.navigate("TodasDespesas", {
+                despesas,
+                viagem,
+                totalDespesas,
+              })
+            }
+          >
+            <Text style={styles.textobotaoTodas}>Ver todas</Text>
+          </TouchableOpacity>
+          <ScrollView style={styles.scrollContainer}>
+            <View style={styles.actionContainer}>
+              {despesaDaCategoria.map((categoria, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.button}
+                  onPress={() =>
+                    navigation.navigate("DespesaPorCategoria", {
+                      categoria,
+                      viagem,
+                      totalDespesas,
+                    })
+                  }
+                >
+                  <View style={styles.textContainer}>
+                    <MaterialCommunityIcons
+                      name={icones[categoria.categoriaId] || "folder"}
+                      size={25}
+                      color={cores[categoria.categoriaId] || "#FFF"}
+                    />
+                    <Text style={styles.buttonText}>
+                      {categoria.nome.length > 18
+                        ? `${categoria.nome.substring(0, 18)}...`
+                        : categoria.nome}
+                    </Text>
+                  </View>
+                  <Text style={styles.valueText}>
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(categoria.totalDespesas)}
                   </Text>
-                </View>
-                <Text style={styles.valueText}>
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(categoria.totalDespesas)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       )}
+
       <TouchableOpacity
-        style={styles.botao}
+        style={viagem.statusId === 1 ? styles.botao : styles.botaoDisabled}
         onPress={() => navigation.navigate("CadastroDespesa", { viagem })}
+        disabled={viagem.statusId === 2}
       >
         <Text style={styles.textobotao}>+ Adicionar Despesa</Text>
       </TouchableOpacity>
@@ -165,6 +210,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#00050D",
     paddingHorizontal: 25,
+  },
+  containerCards: {
+    flex: 1,
+    backgroundColor: "#00050D",
   },
   header: {
     flexDirection: "row",
@@ -187,7 +236,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     textAlign: "center",
     flex: 1,
-    marginTop: 20,
+    marginTop: 10,
   },
   meusGastos: {
     fontSize: 20,
@@ -196,7 +245,7 @@ const styles = StyleSheet.create({
     alignItems: "start",
   },
   infoContainer: {
-    marginTop: 40,
+    marginTop: 20,
   },
   statusRow: {
     flexDirection: "row",
@@ -220,6 +269,11 @@ const styles = StyleSheet.create({
   },
   moneyText: {
     color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  moneyTextRed: {
+    color: "red",
     fontSize: 16,
   },
 
@@ -235,12 +289,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   actionContainer: {
-    marginTop: 20,
+    marginTop: 50,
     alignItems: "center",
   },
   scrollContainer: {
     flexGrow: 1,
-    marginBottom: 150,
+    marginBottom: 125,
+    marginTop: 50,
   },
   button: {
     width: "100%",
@@ -249,9 +304,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 20,
-    flexDirection: "row", 
+    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", 
+    alignItems: "center",
   },
   valueText: {
     fontSize: 16,
@@ -259,7 +314,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   textContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
   },
   row: {
@@ -270,7 +325,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFF",
     fontSize: 16,
-    marginLeft: 10, 
+    marginLeft: 10,
+    fontWeight: "bold",
   },
   botao: {
     backgroundColor: "#0E6EFF",
@@ -283,9 +339,37 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 50,
   },
+  botaoDisabled: {
+    backgroundColor: "#0A4DB3",
+    width: 315,
+    height: 51,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 50,
+    opacity: 0.6,
+  },
   textobotao: {
     color: "#FFF",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  botaoTodas: {
+    backgroundColor: "#0E6EFF",
+    width: 100,
+    height: 31,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    position: "absolute",
+    right: 2,
+  },
+  textobotaoTodas: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

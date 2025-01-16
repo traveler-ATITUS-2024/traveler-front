@@ -20,7 +20,8 @@ import Perfil from "../pages/app/Perfil";
 import EditarNome from "../pages/app/EditarNome";
 import EditarSenha from "../pages/app/EditarSenha";
 import CadastroDespesa from "../pages/app/CadastroDespesa";
-import DespesaPorCategoria from "../pages/app/DespesaPorCategoria"
+import DespesaPorCategoria from "../pages/app/DespesaPorCategoria";
+import TodasDespesas from "../pages/app/TodasDespesas";
 
 const AppStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -59,7 +60,7 @@ function TabRoutes() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                color: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                color: focused ? "#071222" : "rgba(255,255,255,0.5)",
                 fontSize: 12,
               }}
             ></Text>
@@ -84,7 +85,7 @@ function TabRoutes() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                color: focused ? "#0E6EFF" : "rgba(255,255,255,0.5)",
+                color: focused ? "#071222" : "rgba(255,255,255,0.5)",
                 fontSize: 12,
               }}
             ></Text>
@@ -141,6 +142,11 @@ const AppNavigator = () => {
       <AppStack.Screen
         name="EditarSenha"
         component={EditarSenha}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="TodasDespesas"
+        component={TodasDespesas}
         options={{ headerShown: false }}
       />
     </AppStack.Navigator>

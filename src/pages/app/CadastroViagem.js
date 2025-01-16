@@ -13,6 +13,7 @@ import {
   ScrollView,
   Modal,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { ptBR } from "../../utils/estilocalendario";
@@ -64,6 +65,12 @@ export default function CadastroViagem({ navigation, route }) {
   const adicionarNovaViagem = async () => {
     try {
       setIsLoading(true);
+
+      if (!tituloViagem || !dataIda || !dataVolta || !gastoPrevisto) {
+        Alert.alert("Por favor, preencha todas as informações.");
+        return;
+      }
+
       const response = await adicionarViagem(
         tituloViagem,
         dataIda,
@@ -80,6 +87,8 @@ export default function CadastroViagem({ navigation, route }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -255,12 +264,13 @@ export default function CadastroViagem({ navigation, route }) {
             <TouchableOpacity
               style={styles.botaoAdicionar}
               onPress={adicionarNovaViagem}
+              disabled={isLoading}
             >
               {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.textoBotao}>+ Adicionar</Text>
-                )}
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.textoBotao}>+ Adicionar</Text>
+              )}
             </TouchableOpacity>
           </View>
         </ScrollView>
