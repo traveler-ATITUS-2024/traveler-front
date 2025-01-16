@@ -66,6 +66,10 @@ export default function CadastroDespesa({ navigation }) {
         Alert.alert("Por favor, preencha todas as informações.");
         return;
       }
+      if (!valorDespesa) { 
+        Alert.alert("Não é possível cadastrar despesa sem valor.");
+        return;
+      }
       const response = await adicionarDespesa(
         viagem.id,
         categoriaSelecionada,
