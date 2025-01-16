@@ -74,7 +74,7 @@ export default function DetalhesViagem({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
         <Image source={logo} style={styles.logo} />
       </View>
@@ -268,6 +268,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     left: 5,
+    padding: 8,
   },
   logo: {
     width: 80,

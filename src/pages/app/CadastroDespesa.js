@@ -27,6 +27,7 @@ import { adicionarDespesa } from "../../services/gastosService";
 import { useRoute } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 dayjs.extend(utc);
 const categorias = [
@@ -98,10 +99,7 @@ export default function CadastroDespesa({ navigation }) {
             onPress={() => navigation.goBack()}
             style={styles.flechaContainer}
           >
-            <Image
-              source={flechaesquerda}
-              style={[styles.flecha, { tintColor: "#FFFF" }]}
-            />
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <Image source={logo} style={styles.logo} />
         </View>
@@ -308,6 +306,7 @@ const styles = StyleSheet.create({
   flechaContainer: {
     position: "absolute",
     left: 16,
+    padding: 8,
   },
   logo: {
     width: 98,

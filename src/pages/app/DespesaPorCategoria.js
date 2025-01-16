@@ -153,9 +153,8 @@ export default function DespesaPorCategoria({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
-
         <Text style={styles.titulo}>{categoria.nome}</Text>
       </View>
 
@@ -360,18 +359,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   header: {
-    flexDirection: "row",
     alignItems: "center",
     marginTop: 50,
-    width: "100%",
-    justifyContent: "space-between",
   },
   backButton: {
     alignItems: "center",
     alignSelf: "center",
     position: "absolute",
     top: 5,
-    left: 12,
+    left: 5,
+    padding: 8,
   },
   titulo: {
     fontSize: 24,
@@ -379,8 +376,8 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginLeft: 10,
     textAlign: "center",
-    flex: 1,
     marginTop: 20,
+    width: "80%"
   },
   despesacontainer: {
     marginTop: 20,

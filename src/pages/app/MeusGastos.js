@@ -216,11 +216,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#00050D",
   },
   header: {
-    flexDirection: "row",
     alignItems: "center",
     marginTop: 50,
-    width: "100%",
-    justifyContent: "space-between",
   },
   backButton: {
     alignItems: "center",
@@ -228,6 +225,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     left: 5,
+    padding: 8,
   },
   titulo: {
     fontSize: 24,
@@ -235,8 +233,8 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginLeft: 10,
     textAlign: "center",
-    flex: 1,
     marginTop: 10,
+    width: "80%"
   },
   meusGastos: {
     fontSize: 20,
